@@ -72,12 +72,12 @@ client.on("interactionCreate", (interaction: Interaction) => {
       .setStyle("DANGER");
     const row = new MessageActionRow().addComponents(yesButton, noButton);
     interaction.update({
-      content: "Have you read the rules?",
+      content: "Can Gaisgeil pvp?",
       components: [row],
     });
   }
   if (interaction.customId === "yesAZRules") {
-    interaction.update({ content: "here we go", components: [] });
+    interaction.update({ content: "There's even a website LMAO", components: [] });
   }
   if (interaction.customId === "noAZRules") {
     interaction.update({ content: "Go read the rules", components: [] });
