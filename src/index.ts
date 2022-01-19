@@ -8,8 +8,16 @@ import {
 } from "discord.js";
 import ready from "./listeners/ready";
 import dotenv from "dotenv";
+import config from "./config.json";
 
 dotenv.config();
+
+const inGuildOrPendingRoles = [
+  config.role_ab,
+  config.role_az,
+  config.role_ab_pending,
+  config.role_az_pending,
+];
 
 const token = process.env.BOT_TOKEN;
 console.log("Bot is starting...");
@@ -22,6 +30,8 @@ const client = new Client({
   ],
 });
 
+let joinCommandUsers: string[] = [];
+
 client.on("messageCreate", async (message: Message) => {
   if (!message.content.startsWith("%") || message.author.bot) return;
   console.log("i see %");
@@ -29,10 +39,29 @@ client.on("messageCreate", async (message: Message) => {
 
   const command = args?.shift()?.toLowerCase();
   if (command === "join") {
+    if (
+      message.member?.roles.cache.some(
+        (key) =>
+          inGuildOrPendingRoles.includes(key.id) ||
+          joinCommandUsers.includes(message.member!.id)
+      )
+    ) {
+      console.log(
+        `guild or pending guild member, ${message.member.displayName} attempted to use join command`
+      );
+      return;
+    }
+    joinCommandUsers.push(message.member!.id);
+    const guild = client.guilds.cache.get(config.id_guild);
+    const emoji_abyssal = guild?.emojis.cache.find(
+      (emoji) => emoji.name === "abyssal"
+    );
+
     const abyssalButton = new MessageButton()
       .setCustomId("abyssal")
       .setLabel("Abyssal")
-      .setStyle("PRIMARY");
+      .setStyle("PRIMARY")
+      .setEmoji(emoji_abyssal!);
     const azurlaneButton = new MessageButton()
       .setCustomId("azurlane")
       .setLabel("Azurlane")
@@ -61,6 +90,10 @@ client.on("interactionCreate", (interaction: Interaction) => {
       content: "Welcome to Abyssal Message Here",
       components: [],
     });
+    const guild = client.guilds.cache.get(config.id_guild);
+    const member = guild?.members.cache.get(interaction.user.id);
+    member?.roles.add(config.role_ab_pending);
+    joinCommandUsers = joinCommandUsers.filter((id) => id !== member?.id);
   } else if (interaction.customId === "azurlane") {
     const yesButton = new MessageButton()
       .setCustomId("yesAZRules")
@@ -72,12 +105,19 @@ client.on("interactionCreate", (interaction: Interaction) => {
       .setStyle("DANGER");
     const row = new MessageActionRow().addComponents(yesButton, noButton);
     interaction.update({
-      content: "Can Gaisgeil pvp?",
+      content: "Read the rules?",
       components: [row],
     });
   }
   if (interaction.customId === "yesAZRules") {
-    interaction.update({ content: "There's even a website LMAO", components: [] });
+    interaction.update({
+      content: "Congrats you got pending tag",
+      components: [],
+    });
+    const guild = client.guilds.cache.get(config.id_guild);
+    const member = guild?.members.cache.get(interaction.user.id);
+    console.log(member);
+    member?.roles.add(config.role_az_pending);
   }
   if (interaction.customId === "noAZRules") {
     interaction.update({ content: "Go read the rules", components: [] });
