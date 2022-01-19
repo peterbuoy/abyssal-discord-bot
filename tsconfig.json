@@ -17,7 +17,7 @@
     "typeRoots": ["node_modules/@types"],
     "sourceMap": false,
     "baseUrl": "./",
-    "noImplicitAny": true
+    "noImplicitAny": false
   },
   "files": ["src/index.ts"],
   "include": ["./**/*.ts"],
