@@ -8,13 +8,16 @@ This bot manages the Abyssal / Azurlane guild activities. This bot is meant to r
 - npm v7.21.1 or higher
 
 # Linting and Formatting
-This repo uses eslint along with the typescript plugin and parser.
+Linting is done via eslint: `npm run lint`
 
-You can manually run the linter by typing in `npm run lint` in the command line.
+Formatting is done via prettier: `npm run format`
 
-It is highly recommended to install the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for vs code as it will allow you to see errors and warnings as you make them :)
+This repo uses ESlint along with the typescript plugin and parser.
+It is highly recommended to install the [ESlint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for vs code as it will allow you to see errors and warnings as you make them :)
 
-Formatting is done via prettier.
+Installing the [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode#review-details) for vs code is also recommended, which will allow you to format your code on save. Currently the `.prettierrc` configuration file is empty so the formatting style is the Prettier default.
+
+Prettier formatting will override any eslint warnings with the current configuration.
 
 # Setup
 Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. Depending on the implementation of authorization, certain secret values will also be stored in a file likely called 'credentials.json'.
