@@ -84,30 +84,6 @@ client.on("interactionCreate", (interaction: Interaction) => {
   }
 });
 
-// const collector = message.channel.createMessageComponentCollector({
-// 	componentType: "BUTTON",
-// 	time: 5000,
-// });
-
-// collector.on("collect", async (i) => {
-// 	console.log("i collect");
-// 	if (message.author.id === interaction.user.id) {
-// 		await i.reply({
-// 			content: "Input from requested user received!",
-// 			components: [],
-// 		});
-// 	}
-// });
-
-// collector.on("end", (collected) =>
-// 	console.log(`Collected ${collected.size} items`)
-// );
-
-client.on("interactionCreate", (interaction) => {
-  if (!interaction.isButton()) return;
-  console.log(interaction.id);
-});
-
 ready(client);
 
 client.login(token);
