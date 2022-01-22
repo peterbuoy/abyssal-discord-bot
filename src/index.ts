@@ -1,26 +1,14 @@
-import {
-  Client,
-  Message,
-  Intents,
-  MessageActionRow,
-  MessageButton,
-  Interaction,
-} from "discord.js";
+import { Client, Message, Intents } from "discord.js";
 import ready from "./listeners/ready";
 import dotenv from "dotenv";
-import config from "./config.json";
+import { WelcomeHandler } from "./handler";
 
 dotenv.config();
 
-const inGuildOrPendingRoles = [
-  config.role_ab,
-  config.role_az,
-  config.role_ab_pending,
-  config.role_az_pending,
-];
-
 const token = process.env.BOT_TOKEN;
 console.log("Bot is starting...");
+
+const welcomeHandler = new WelcomeHandler();
 
 const client = new Client({
   intents: [
@@ -30,97 +18,13 @@ const client = new Client({
   ],
 });
 
-let joinCommandUsers: string[] = [];
-
 client.on("messageCreate", async (message: Message) => {
   if (!message.content.startsWith("%") || message.author.bot) return;
-  console.log("i see %");
   const args = message.content.slice(1).trim().split(/ +/);
 
-  const command = args?.shift()?.toLowerCase();
+  const command = args.shift()?.toLowerCase();
   if (command === "join") {
-    if (
-      message.member?.roles.cache.some(
-        (key) =>
-          inGuildOrPendingRoles.includes(key.id) ||
-          joinCommandUsers.includes(message.member!.id)
-      )
-    ) {
-      console.log(
-        `guild or pending guild member, ${message.member.displayName} attempted to use join command`
-      );
-      return;
-    }
-    joinCommandUsers.push(message.member!.id);
-    const guild = client.guilds.cache.get(config.id_guild);
-    const emoji_abyssal = guild?.emojis.cache.find(
-      (emoji) => emoji.name === "abyssal"
-    );
-
-    const abyssalButton = new MessageButton()
-      .setCustomId("abyssal")
-      .setLabel("Abyssal")
-      .setStyle("PRIMARY")
-      .setEmoji(emoji_abyssal!);
-    const azurlaneButton = new MessageButton()
-      .setCustomId("azurlane")
-      .setLabel("Azurlane")
-      .setStyle("PRIMARY");
-
-    const row = new MessageActionRow().addComponents(
-      abyssalButton,
-      azurlaneButton
-    );
-    await message.reply({
-      content: "Which guild would you like to join?",
-      components: [row],
-    });
-  }
-});
-
-client.on("interactionCreate", (interaction: Interaction) => {
-  if (!interaction.isButton()) return;
-  if (interaction.user.id !== interaction.member?.user.id) {
-    console.log("interaction id and caller id mismatch");
-    return;
-  }
-
-  if (interaction.customId === "abyssal") {
-    interaction.update({
-      content: "Welcome to Abyssal Message Here",
-      components: [],
-    });
-    const guild = client.guilds.cache.get(config.id_guild);
-    const member = guild?.members.cache.get(interaction.user.id);
-    member?.roles.add(config.role_ab_pending);
-    joinCommandUsers = joinCommandUsers.filter((id) => id !== member?.id);
-  } else if (interaction.customId === "azurlane") {
-    const yesButton = new MessageButton()
-      .setCustomId("yesAZRules")
-      .setLabel("Yes")
-      .setStyle("SUCCESS");
-    const noButton = new MessageButton()
-      .setCustomId("noAZRules")
-      .setLabel("No")
-      .setStyle("DANGER");
-    const row = new MessageActionRow().addComponents(yesButton, noButton);
-    interaction.update({
-      content: "Read the rules?",
-      components: [row],
-    });
-  }
-  if (interaction.customId === "yesAZRules") {
-    interaction.update({
-      content: "Congrats you got pending tag",
-      components: [],
-    });
-    const guild = client.guilds.cache.get(config.id_guild);
-    const member = guild?.members.cache.get(interaction.user.id);
-    console.log(member);
-    member?.roles.add(config.role_az_pending);
-  }
-  if (interaction.customId === "noAZRules") {
-    interaction.update({ content: "Go read the rules", components: [] });
+    welcomeHandler.handleJoin(client, message);
   }
 });
 
