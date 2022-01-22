@@ -4,7 +4,7 @@ This bot manages the Abyssal / Azurlane guild activities. This bot is meant to r
 # Dependencies
 - Discord.js v13.*
 - dotenv 14.*
-- Node.js v16.9.1 or higher
+- Node.js v17.* or higher
 - npm v7.21.1 or higher
 
 # Linting and Formatting
