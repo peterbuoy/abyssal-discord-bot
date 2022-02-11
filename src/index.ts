@@ -17,7 +17,6 @@ const client = new Client({
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
   ],
 });
-
 client.on("messageCreate", async (message: Message) => {
   if (!message.content.startsWith("%") || message.author.bot) return;
   const args = message.content.slice(1).trim().split(/ +/);

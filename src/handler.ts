@@ -1,10 +1,8 @@
 import {
-  ButtonInteraction,
   Client,
-  Interaction,
   Message,
   MessageActionRow,
-  MessageButton,
+  MessageComponentInteraction,
 } from "discord.js";
 import {
   abyssalButton,
@@ -15,12 +13,9 @@ import {
 import config from "./config.json";
 
 class WelcomeHandler {
-  // Array of user IDs to keep track of who is currently using the commands
+  // Array of user IDs to keep track of who is currently using the join cmd
   joinUserIDs: string[] = [];
-
   handleJoin(client: Client, message: Message) {
-    // use a util function for guild or pending role check because this is very ugly
-
     if (
       message.member?.roles.cache.some(
         (key) =>
@@ -31,9 +26,7 @@ class WelcomeHandler {
     ) {
       return;
     }
-
     this.joinUserIDs.push(message.member!.id);
-
     let botMessageID = "";
     message
       .reply({
@@ -49,7 +42,7 @@ class WelcomeHandler {
             content: "Join process exceeded 5 minutes. Please try again.",
             components: [],
           });
-          this.#removeFromJoinUserID(message.member?.id);
+          this.#removeFromJoinUserID(message.member!.id);
         }, 5 * 60000);
       });
 
@@ -57,10 +50,11 @@ class WelcomeHandler {
     client.on("interactionCreate", (interaction) => {
       const guild = client.guilds.cache.get(config.id_guild);
       const member = guild?.members.cache.get(interaction.user.id);
-
       // Checks if interaction is button and if the interaction is the one associated with the bot message
       if (!interaction.isButton() && interaction.user.id !== botMessageID)
         return;
+      // Type narrowing using instanceof. Comment for spaced repetition :D
+      if (!(interaction instanceof MessageComponentInteraction)) return;
 
       switch (interaction.customId) {
         case "abyssal":
@@ -73,7 +67,7 @@ class WelcomeHandler {
           break;
         case "azurlane":
           interaction.update({
-            content: "Read the rules?",
+            content: "Did you read the rules?",
             components: [
               new MessageActionRow().addComponents(
                 yesAZRulesButton,
@@ -87,7 +81,7 @@ class WelcomeHandler {
             content: "Congrats you got pending tag",
             components: [],
           });
-          this.#removeFromJoinUserID(member?.id);
+          this.#removeFromJoinUserID(member!.id);
           member?.roles.add(config.role_az_pending);
           break;
         case "noAZRules":
@@ -95,12 +89,12 @@ class WelcomeHandler {
             content: "Go read the rules",
             components: [],
           });
-          this.#removeFromJoinUserID(member?.id);
+          this.#removeFromJoinUserID(member!.id);
           break;
       }
     });
   }
-  #removeFromJoinUserID(memberID: string | undefined) {
+  #removeFromJoinUserID(memberID: string) {
     this.joinUserIDs = this.joinUserIDs.filter((id) => id !== memberID);
   }
 }
