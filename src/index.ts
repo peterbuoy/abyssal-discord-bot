@@ -1,8 +1,9 @@
-import { Client, Message, Intents } from "discord.js";
+import { Client, Message, Intents, TextChannel } from "discord.js";
 import ready from "./listeners/ready";
 import dotenv from "dotenv";
 import { WelcomeHandler } from "./handler";
 import { userMention } from "@discordjs/builders";
+import { role_ab, role_az, chan_staff_bot_notif } from "./config.json";
 
 dotenv.config();
 
@@ -30,21 +31,36 @@ client.on("messageCreate", async (message: Message) => {
 });
 
 // Name Format Enforcement
-client.on("guildMemberUpdate", async (oldMember, newMember) => {
-  // Doesn't work for server owner
-  // Handle name enforcement here I guess? What happens if the bot goes down?
-  // Maybe have a name enforcement check when the bot turns on?
-  console.log("update detected");
-  console.log(`Old name was ${oldMember.displayName}`);
+client.on("guildMemberUpdate", (oldMember, newMember) => {
+  const userID = oldMember.id;
   const regex = /<[A-Za-z(0-9)?]+>/;
+  const staffBotNotifChannel = client.channels.cache.get(chan_staff_bot_notif);
+  const msg = `
+    **Name Change Detected**
+    User Profile: ${userMention(userID)}
+    Old Nickname: ${oldMember.nickname}
+    New Nickname: ${newMember.nickname}\n
+    `;
+  // somethign wrong with this conditional
   if (
-    oldMember.displayName !== newMember.displayName &&
-    !regex.test(newMember.displayName)
+    !(staffBotNotifChannel instanceof TextChannel) ||
+    oldMember.roles.cache.has(role_az || role_ab)
   ) {
-    const userID = oldMember.id;
-    // print 2 staff channel
-    console.log(`Invalid name change detected! for ${userMention(userID)}`);
-    console.log(`Name is ${newMember.displayName}`);
+    console.log("exception for name change");
+    return;
+  }
+  if (
+    oldMember.nickname !== newMember.nickname &&
+    !regex.test(newMember.nickname!)
+  ) {
+    console.log("invalid name");
+    staffBotNotifChannel.send(
+      `⚠️**Invalid Name Change**⚠️ for ${userMention(userID)}
+      ${msg}
+      `
+    );
+  } else {
+    staffBotNotifChannel.send(msg);
   }
 });
 
