@@ -3,14 +3,20 @@ import ready from "./listeners/ready";
 import dotenv from "dotenv";
 import { WelcomeHandler } from "./handler";
 import { userMention } from "@discordjs/builders";
-import { role_ab, role_az, chan_staff_bot_notif } from "./config.json";
+import { collectionContains } from "./utils/utils";
+import { purgePending } from "./utils/purgePending";
+import {
+  role_ab,
+  role_az,
+  inGuildOrPending,
+  role_az_pending,
+  chan_staff_bot_notif,
+} from "./config.json";
+import Database from "better-sqlite3";
 
 dotenv.config();
 
-const token = process.env.BOT_TOKEN;
 console.log("Bot is starting...");
-
-const welcomeHandler = new WelcomeHandler();
 
 const client = new Client({
   intents: [
@@ -20,13 +26,24 @@ const client = new Client({
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
   ],
 });
+const token = process.env.BOT_TOKEN;
+const welcomeHandler = new WelcomeHandler();
+const db = new Database("members.db");
+db.exec(
+  "CREATE TABLE IF NOT EXISTS pending (snowflake TEXT PRIMARY KEY, kickTime INT)"
+);
+
+setInterval(purgePending, 2000, client, db);
+
+client.login(token);
+
 client.on("messageCreate", async (message: Message) => {
   if (!message.content.startsWith("%") || message.author.bot) return;
   const args = message.content.slice(1).trim().split(/ +/);
 
   const command = args.shift()?.toLowerCase();
   if (command === "join") {
-    welcomeHandler.handleJoin(client, message);
+    welcomeHandler.handleJoin(client, message, db);
   }
 });
 
@@ -41,12 +58,7 @@ client.on("guildMemberUpdate", (oldMember, newMember) => {
     Old Nickname: ${oldMember.nickname}
     New Nickname: ${newMember.nickname}\n
     `;
-  // somethign wrong with this conditional
-  if (
-    !(staffBotNotifChannel instanceof TextChannel) ||
-    oldMember.roles.cache.has(role_az || role_ab)
-  ) {
-    console.log("exception for name change");
+  if (!(staffBotNotifChannel instanceof TextChannel)) {
     return;
   }
   if (
@@ -62,8 +74,14 @@ client.on("guildMemberUpdate", (oldMember, newMember) => {
   } else {
     staffBotNotifChannel.send(msg);
   }
+  if (newMember.roles.cache.has(role_az)) {
+    console.log("Member confirmed. Removing from pending member database.");
+    const del = db.prepare("DELETE FROM pending WHERE ?");
+    del.run(newMember.id);
+    const stmt = db.prepare("SELECT * FROM pending");
+    const pendingMembers = stmt.all();
+    console.log(pendingMembers);
+  }
 });
 
 ready(client);
-
-client.login(token);
