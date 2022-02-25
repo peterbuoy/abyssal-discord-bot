@@ -104,4 +104,4 @@ dist
 .tern-port
 
 # sqlite db
-.db
+*.db
