@@ -1,5 +1,3 @@
-# Bot development will not be worked on as of 11 Feb 2022 due to lack of interest.
-
 # abyssal-discord-bot
 This bot manages the Abyssal / Azurlane guild activities. This bot is meant to replace the KCAZDiscord bot that originally supported the guild.
 
@@ -25,6 +23,6 @@ Prettier formatting will override any eslint warnings with the current configura
 Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. Depending on the implementation of authorization, certain secret values will also be stored in a file likely called 'credentials.json'.
 
 # Starting the Bots
-Development: `npm start`
+Development: `npm start dev:watch`
 
 Production: `npm run prod`
