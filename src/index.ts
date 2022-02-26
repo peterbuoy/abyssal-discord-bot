@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { WelcomeHandler } from "./handler";
 import { userMention } from "@discordjs/builders";
 import { collectionContains } from "./utils/utils";
-import { purgePending } from "./utils/purgePending";
 import {
   role_ab,
   role_az,
@@ -12,7 +11,6 @@ import {
   role_az_pending,
   chan_staff_bot_notif,
 } from "./config.json";
-import Database from "better-sqlite3";
 
 dotenv.config();
 
@@ -28,12 +26,6 @@ const client = new Client({
 });
 const token = process.env.BOT_TOKEN;
 const welcomeHandler = new WelcomeHandler();
-// const db = new Database("members.db");
-db.exec(
-  "CREATE TABLE IF NOT EXISTS pending (snowflake TEXT PRIMARY KEY, kickTime INT)"
-);
-
-setInterval(purgePending, 2000, client, db);
 
 client.login(token);
 
@@ -43,7 +35,7 @@ client.on("messageCreate", async (message: Message) => {
 
   const command = args.shift()?.toLowerCase();
   if (command === "join") {
-    welcomeHandler.handleJoin(client, message, db);
+    welcomeHandler.handleJoin(client, message);
   }
 });
 
@@ -73,14 +65,6 @@ client.on("guildMemberUpdate", (oldMember, newMember) => {
     );
   } else {
     staffBotNotifChannel.send(msg);
-  }
-  if (newMember.roles.cache.has(role_az)) {
-    console.log("Member confirmed. Removing from pending member database.");
-    const del = db.prepare("DELETE FROM pending WHERE ?");
-    del.run(newMember.id);
-    const stmt = db.prepare("SELECT * FROM pending");
-    const pendingMembers = stmt.all();
-    console.log(pendingMembers);
   }
 });
 

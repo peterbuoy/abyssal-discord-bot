@@ -1,4 +1,3 @@
-import { Database } from "better-sqlite3";
 import {
   Client,
   Message,
@@ -16,7 +15,7 @@ import config from "./config.json";
 class WelcomeHandler {
   // Array of user IDs to keep track of who is currently using the join cmd
   joinUserIDs: string[] = [];
-  handleJoin(client: Client, message: Message, db: Database) {
+  handleJoin(client: Client, message: Message) {
     if (
       message.member?.roles.cache.some(
         (key) =>
@@ -84,13 +83,7 @@ class WelcomeHandler {
           });
           this.#removeFromJoinUserID(member!.id);
           member?.roles.add(config.role_az_pending);
-          const insert = db.prepare(
-            "INSERT INTO pending(snowflake, kickTime) values (?, ?)"
-          );
-          insert.run(member?.id, Date.now() + 10000);
-          // const stmt = db.prepare("SELECT * FROM pending");
-          // const pendingMembers = stmt.all();
-          // console.log(pendingMembers);
+
           break;
         }
         case "noAZRules":
