@@ -28,7 +28,7 @@ const client = new Client({
 });
 const token = process.env.BOT_TOKEN;
 const welcomeHandler = new WelcomeHandler();
-const db = new Database("members.db");
+// const db = new Database("members.db");
 db.exec(
   "CREATE TABLE IF NOT EXISTS pending (snowflake TEXT PRIMARY KEY, kickTime INT)"
 );
