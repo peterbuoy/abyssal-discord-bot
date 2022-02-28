@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev:watch": "ts-node-dev src/index.ts",
-    "prod": "ts-node --transpile-only src/index.ts",
+    "prod": "ts-node-dev --transpile-only src/index.ts",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
