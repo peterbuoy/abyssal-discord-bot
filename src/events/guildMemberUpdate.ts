@@ -10,28 +10,24 @@ module.exports = {
     const userID = oldMember.id;
     const staffBotNotifChannel = newMember.guild.channels.cache.get(
       config.chan_staff_bot_notif
-    );
+    ) as TextChannel;
 
-    if (!staffBotNotifChannel?.isText()) return;
-
-    const msg = `
-      **Name Change Detected**
-      User Profile: ${userMention(userID)}
-      Old Nickname: ${oldMember.nickname}
-      New Nickname: ${newMember.nickname}\n
-      `;
     if (
       oldMember.nickname !== newMember.nickname &&
       !utils.isNameValid(newMember.nickname!)
     ) {
-      console.log("invalid name");
       staffBotNotifChannel.send(
-        `⚠️**Invalid Name Change**⚠️ for ${userMention(userID)}
-        ${msg}
-        `
+        `⚠️ Invalid Name Change
+        User Profile: ${userMention(userID)}
+        Old Nickname: ${oldMember.nickname}
+        New Nickname: ${newMember.nickname}\n`
       );
     } else {
-      staffBotNotifChannel.send(msg);
+      staffBotNotifChannel.send(`
+      ☑️ Valid Name Change
+      User Profile: ${userMention(userID)}
+      Old Nickname: ${oldMember.nickname}
+      New Nickname: ${newMember.nickname}\n`);
     }
   },
 };
