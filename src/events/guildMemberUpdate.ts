@@ -1,22 +1,23 @@
-import { Client, TextChannel } from "discord.js";
+import { GuildMember, PartialGuildMember, TextChannel } from "discord.js";
 import { userMention } from "@discordjs/builders";
 import { chan_staff_bot_notif } from "../config.json";
 
-export default (client: Client): void => {
-  client.on("guildMemberUpdate", (oldMember, newMember) => {
+module.exports = {
+  name: "guildMemberUpdate",
+  execute(oldMember: GuildMember | PartialGuildMember, newMember: GuildMember) {
+    console.log(oldMember, newMember);
     const userID = oldMember.id;
     const regex = /<[A-Za-z(0-9)?]+>/;
+    // get channel by id
     const staffBotNotifChannel =
-      client.channels.cache.get(chan_staff_bot_notif);
+      newMember.guild.channels.cache.get(chan_staff_bot_notif);
+    if (!staffBotNotifChannel?.isText()) return;
     const msg = `
       **Name Change Detected**
       User Profile: ${userMention(userID)}
       Old Nickname: ${oldMember.nickname}
       New Nickname: ${newMember.nickname}\n
       `;
-    if (!(staffBotNotifChannel instanceof TextChannel)) {
-      return;
-    }
     if (
       oldMember.nickname !== newMember.nickname &&
       !regex.test(newMember.nickname!)
@@ -30,5 +31,5 @@ export default (client: Client): void => {
     } else {
       staffBotNotifChannel.send(msg);
     }
-  });
+  },
 };

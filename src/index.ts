@@ -1,11 +1,7 @@
 import { Client, Message, Intents, TextChannel } from "discord.js";
+import fs from "fs";
 import dotenv from "dotenv";
 import { WelcomeHandler } from "./handler";
-
-// smelly imports
-import ready from "./listeners/ready";
-import guildMemberUpdate from "./listeners/guildMemberUpdate";
-import onMessageCreate from "./listeners/onMessageCreate";
 
 dotenv.config();
 
@@ -24,9 +20,18 @@ const welcomeHandler = new WelcomeHandler();
 
 client.login(token);
 
-// this is smelly
-ready(client);
-guildMemberUpdate(client);
-// doesn't this mean that welcomeHandler gets passed as a param everytime a message is created
-// should look into that
-onMessageCreate(client, welcomeHandler);
+const eventFiles = fs
+  .readdirSync("./src/events")
+  .filter((file) => file.endsWith(".ts"));
+console.log(eventFiles);
+
+(async () => {
+  for (const file of eventFiles) {
+    const event = await import(`./events/${file}`);
+    if (event.once) {
+      client.once(event.name, (...args) => event.execute(...args));
+    } else {
+      client.on(event.name, (...args) => event.execute(...args));
+    }
+  }
+})();
