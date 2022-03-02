@@ -1,28 +1,42 @@
-import { Client } from "discord.js";
+import { userMention } from "@discordjs/builders";
+import { Client, TextChannel } from "discord.js";
 import * as config from "../config.json";
 import utils from "../utils/utils";
 
 module.exports = {
   name: "ready",
   once: true,
-  execute(client: Client) {
+  async execute(client: Client) {
     if (!client.user || !client.application) {
       return;
     }
-    const guild = client.guilds.cache.get(config.id_guild);
-    const members = guild?.members.cache;
-    console.log(members);
-    const membersWithInvalidNames = guild?.members.cache.filter((member) =>
-      member.roles.cache.hasAny(
-        config.role_ab,
-        config.role_ab_pending,
-        config.role_az,
-        config.role_az_pending
-      )
-    );
-    // .filter((member) => !utils.isNameValid(member.displayName));
-    console.log(membersWithInvalidNames);
 
+    try {
+      const guild = await client.guilds.fetch(config.id_guild);
+      const staffNotificationChannel = (await guild.channels.fetch(
+        config.chan_staff_bot_notif
+      )) as TextChannel;
+      const memberList = await guild.members.fetch();
+      const taggedMembersWithInvalidNames = memberList.filter(
+        (member) =>
+          member.roles.cache.hasAny(
+            config.role_ab,
+            config.role_ab_pending,
+            config.role_az,
+            config.role_az_pending
+          ) && !utils.isNameValid(member.displayName)
+      );
+      staffNotificationChannel.send(
+        "`-Bot restart: listing members with invalid names-`"
+      );
+      taggedMembersWithInvalidNames.forEach((member) => {
+        staffNotificationChannel.send(
+          `${userMention(member.id)} has an invalid name.`
+        );
+      });
+    } catch (error) {
+      console.error(error);
+    }
     console.log(`${client.user.username} is ready!`);
   },
 };
