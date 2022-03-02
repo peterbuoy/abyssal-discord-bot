@@ -10,23 +10,23 @@ import {
   yesAZRulesButton,
   noAZRulesButton,
 } from "./buttons/joinButtons";
-import config from "./config.json";
+import config from "./config";
 
 class WelcomeHandler {
   // Array of user IDs to keep track of who is currently using the join cmd
-  joinUserIDs: string[] = [];
+  static joinUserIDs: string[] = [];
   handleJoin(client: Client, message: Message) {
     if (
       message.member?.roles.cache.some(
         (key) =>
           config.inGuildOrPending.includes(key.id) ||
-          (this.joinUserIDs.includes(message.member!.id) &&
+          (WelcomeHandler.joinUserIDs.includes(message.member!.id) &&
             message.channelId === config.chan_welcome)
       )
     ) {
       return;
     }
-    this.joinUserIDs.push(message.member!.id);
+    WelcomeHandler.joinUserIDs.push(message.member!.id);
     let botMessageID = "";
     message
       .reply({

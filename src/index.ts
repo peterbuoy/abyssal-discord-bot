@@ -1,7 +1,6 @@
 import { Client, Message, Intents, TextChannel } from "discord.js";
 import fs from "fs";
 import dotenv from "dotenv";
-import { WelcomeHandler } from "./handler";
 
 dotenv.config();
 
@@ -16,15 +15,14 @@ const client = new Client({
   ],
 });
 const token = process.env.BOT_TOKEN;
-const welcomeHandler = new WelcomeHandler();
 
 client.login(token);
 
 const eventFiles = fs
   .readdirSync("./src/events")
   .filter((file) => file.endsWith(".ts"));
-console.log(eventFiles);
 
+// dynamically import events from ./src/events
 (async () => {
   for (const file of eventFiles) {
     const event = await import(`./events/${file}`);

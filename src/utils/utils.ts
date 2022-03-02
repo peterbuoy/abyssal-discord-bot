@@ -1,8 +1,9 @@
 import { Role, Collection } from "discord.js";
 
-const collectionContains = (
-  object: Collection<string, Role>,
-  keys: Array<string>
-) => keys.some((k) => k in object);
+const isNameValid = (name: string): boolean => {
+  const regex = /^(.*)([^ ] {1})<([A-Z,a-z,0-9,_]{3,16})>$/;
+  return regex.test(name);
+};
 
-export { collectionContains };
+// export { collectionContains, isNameValid };
+export default { isNameValid };
