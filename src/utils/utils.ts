@@ -5,5 +5,13 @@ const isNameValid = (name: string): boolean => {
   return regex.test(name);
 };
 
+const getFamilyName = (displayName: string): string => {
+  const regex = /<(.*?)>/;
+  const famName = regex.exec(displayName);
+
+  if (famName) return famName[1];
+  else return displayName;
+};
+
 // export { collectionContains, isNameValid };
-export default { isNameValid };
+export default { isNameValid, getFamilyName };
