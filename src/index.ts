@@ -1,4 +1,11 @@
-import { Client, Message, Intents, TextChannel } from "discord.js";
+import {
+  Client,
+  Collection,
+  Guild,
+  GuildMember,
+  Intents,
+  TextChannel,
+} from "discord.js";
 import fs from "fs";
 import dotenv from "dotenv";
 import config from "./config.json";
@@ -8,7 +15,7 @@ dotenv.config();
 
 console.log("Bot is starting...");
 
-const client = new Client({
+const client: any = new Client({
   intents: [
     Intents.FLAGS.GUILD_MEMBERS,
     Intents.FLAGS.GUILDS,
@@ -20,6 +27,20 @@ const token = process.env.BOT_TOKEN;
 
 client.login(token);
 
+client.commands = new Collection();
+
+const commandFiles = fs
+  .readdirSync("./src/commands")
+  .filter((file) => file.endsWith(".js"));
+(async () => {
+  for (const file of commandFiles) {
+    const command = await import(`./src/commands/${file}`);
+    // Set a new item in the Collection
+    // With the key as the command name and the value as the exported module
+    client.commands.set(command.data.name, command);
+  }
+})();
+
 const eventFiles = fs
   .readdirSync("./src/events")
   .filter((file) => file.endsWith(".ts"));
@@ -29,15 +50,15 @@ const eventFiles = fs
   for (const file of eventFiles) {
     const event = await import(`./events/${file}`);
     if (event.once) {
-      client.once(event.name, (...args) => event.execute(...args));
+      client.once(event.name, (...args: any) => event.execute(...args));
     } else {
-      client.on(event.name, (...args) => event.execute(...args));
+      client.on(event.name, (...args: any) => event.execute(...args));
     }
   }
 })();
 
 // If you put this in events it won't detect the removal
-client.on("guildMemberRemove", (member) => {
+client.on("guildMemberRemove", (member: GuildMember) => {
   console.log("guild member removed");
   const staffBotNotifChannel = member.guild.channels.cache.get(
     config.chan_staff_bot_notif
@@ -50,6 +71,24 @@ client.on("guildMemberRemove", (member) => {
         member.displayName
       )} has left the server. Please kick them in game`
     );
+  }
+});
+
+client.on("interactionCreate", async (interaction: any) => {
+  if (!interaction.isCommand()) return;
+
+  const command = client.commands.get(interaction.commandName);
+
+  if (!command) return;
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({
+      content: "There was an error while executing this command!",
+      ephemeral: true,
+    });
   }
 });
 
