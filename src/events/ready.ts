@@ -1,6 +1,6 @@
 import { userMention } from "@discordjs/builders";
 import { Client, TextChannel } from "discord.js";
-import * as config from "../config.json";
+import config from "../config.json";
 import utils from "../utils/utils";
 
 module.exports = {

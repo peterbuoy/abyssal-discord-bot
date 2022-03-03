@@ -1,7 +1,7 @@
 import { GuildMember } from "discord.js";
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import utils from "../utils/utils";
-import * as config from "../config.json";
+import config from "../config.json";
 import dayjs from "dayjs";
 
 const addToSheet = async (member: GuildMember) => {

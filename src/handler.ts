@@ -10,7 +10,7 @@ import {
   yesAZRulesButton,
   noAZRulesButton,
 } from "./buttons/joinButtons";
-import config from "./config";
+import config from "./config.json";
 
 class WelcomeHandler {
   // Array of user IDs to keep track of who is currently using the join cmd
