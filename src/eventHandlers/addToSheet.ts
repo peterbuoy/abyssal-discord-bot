@@ -11,18 +11,22 @@ const addToSheet = async (newMember: GuildMember) => {
   } else if (newMember.roles.cache.has(config.role_az)) {
     sheetTitle = config.az_sheet_title;
   }
-  const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
-  await doc.useServiceAccountAuth({
-    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
-    private_key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
-  });
-  await doc.loadInfo();
-  const sheet = doc.sheetsByTitle[sheetTitle];
-  const row = await sheet.addRow({
-    "Discord UserID": newMember.id,
-    "Family Name": utils.getFamilyName(newMember.displayName),
-    "Join Date": dayjs().format("MM/DD/YYYY"),
-  });
+  try {
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
+    await doc.useServiceAccountAuth({
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
+      private_key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+    });
+    await doc.loadInfo();
+    const sheet = doc.sheetsByTitle[sheetTitle];
+    const row = await sheet.addRow({
+      "Discord UserID": newMember.id,
+      "Family Name": utils.getFamilyName(newMember.displayName),
+      "Join Date": dayjs().format("MM/DD/YYYY"),
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export { addToSheet };
