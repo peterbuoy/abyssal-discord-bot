@@ -3,7 +3,6 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import config from "../config.json";
 
 const removeFromSheet = async (oldMember: GuildMember | PartialGuildMember) => {
-  console.log("removing from sheet");
   let sheetTitle = "";
   if (oldMember.roles.cache.has(config.role_ab)) {
     sheetTitle = config.ab_sheet_title;

@@ -5,7 +5,6 @@ import config from "../config.json";
 import dayjs from "dayjs";
 
 const addToSheet = async (newMember: GuildMember) => {
-  console.log("adding to sheet");
   let sheetTitle = "";
   if (newMember.roles.cache.has(config.role_ab)) {
     sheetTitle = config.ab_sheet_title;
