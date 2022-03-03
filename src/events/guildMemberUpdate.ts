@@ -3,6 +3,7 @@ import { userMention } from "@discordjs/builders";
 import config from "../config.json";
 import { addToSheet } from "../eventHandlers/addToSheet";
 import { removeFromSheet } from "../eventHandlers/removeFromSheet";
+import { updateSheetFamilyName } from "../eventHandlers/updateSheetFamilyName";
 
 import utils from "../utils/utils";
 
@@ -34,8 +35,6 @@ module.exports = {
       removeFromSheet(oldMember);
     }
 
-    // Maybe add error handling if someone changes their name before they get accepted?
-
     // Name check
     if (
       oldMember.nickname !== newMember.nickname &&
@@ -55,7 +54,9 @@ module.exports = {
       ☑️ Valid Name Change
       User Profile: ${userMention(userID)}
       Old Nickname: ${oldMember.nickname}
-      New Nickname: ${newMember.nickname}\n`);
+      New Nickname: ${newMember.nickname}
+      *Sheet has been updated*\n`);
+      updateSheetFamilyName(newMember);
     }
   },
 };
