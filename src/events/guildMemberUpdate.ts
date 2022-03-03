@@ -21,7 +21,6 @@ module.exports = {
       (!oldMember.roles.cache.has(config.role_az) &&
         newMember.roles.cache.has(config.role_az))
     ) {
-      console.log("add member to sheet");
       addToSheet(newMember);
     }
 
@@ -32,7 +31,6 @@ module.exports = {
       (oldMember.roles.cache.has(config.role_az) &&
         !newMember.roles.cache.has(config.role_az))
     ) {
-      console.log("remove member from sheet");
       removeFromSheet(oldMember);
     }
 

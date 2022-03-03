@@ -26,9 +26,12 @@ module.exports = {
             config.role_az_pending
           ) && !utils.isNameValid(member.displayName)
       );
-      staffNotificationChannel.send(
-        "`-Bot restart: listing members with invalid names-`"
-      );
+      if (taggedMembersWithInvalidNames.size > 0) {
+        staffNotificationChannel.send(
+          "`-Bot restart: invalid names detected-`"
+        );
+      }
+
       taggedMembersWithInvalidNames.forEach((member) => {
         staffNotificationChannel.send(
           `${userMention(member.id)} has an invalid name.`
