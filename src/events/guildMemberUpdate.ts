@@ -4,6 +4,7 @@ import config from "../config.json";
 import { addToSheet } from "../eventHandlers/addToSheet";
 import { removeFromSheet } from "../eventHandlers/removeFromSheet";
 import { updateSheetFamilyName } from "../eventHandlers/updateSheetFamilyName";
+import { sendWelcomeMessage } from "../eventHandlers/sendWelcomeMessage";
 
 import utils from "../utils/utils";
 
@@ -23,6 +24,7 @@ module.exports = {
         newMember.roles.cache.has(config.role_az))
     ) {
       addToSheet(newMember);
+      sendWelcomeMessage(newMember, config.chan_bot_spam);
     }
 
     // User leaving guild
