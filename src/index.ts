@@ -43,6 +43,15 @@ client.on("ready", async () => {
   if (!client.user || !client.application) {
     return;
   }
+  new WOKCommands(client, {
+    commandDir: path.join(__dirname, "commands"),
+    typeScript: true,
+    defaultLanguage: "english",
+    ignoreBots: true,
+    ephemeral: true,
+    botOwners: config.id_peterbuoy,
+    testServers: [config.id_guild],
+  }).setDefaultPrefix("%");
   try {
     const guild = await client.guilds.fetch(config.id_guild);
     const staffNotificationChannel = (await guild.channels.fetch(
