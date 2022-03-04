@@ -1,9 +1,12 @@
 import { Client, Message, Intents, TextChannel } from "discord.js";
 import fs from "fs";
+import path from "path";
+import WOKCommands from "wokcommands";
 import dotenv from "dotenv";
 import config from "./config.json";
 import { removeFromSheet } from "./eventHandlers/removeFromSheet";
 import utils from "./utils/utils";
+import { userMention } from "@discordjs/builders";
 dotenv.config();
 
 console.log("Bot is starting...");
@@ -35,6 +38,48 @@ const eventFiles = fs
     }
   }
 })();
+
+client.on("ready", async () => {
+  if (!client.user || !client.application) {
+    return;
+  }
+  new WOKCommands(client, {
+    commandDir: path.join(__dirname, "commands"),
+    typeScript: true,
+    defaultLanguage: "english",
+    ignoreBots: true,
+    ephemeral: true,
+    botOwners: config.id_peterbuoy,
+    testServers: [config.id_guild],
+  }).setDefaultPrefix("%");
+  try {
+    const guild = await client.guilds.fetch(config.id_guild);
+    const staffNotificationChannel = (await guild.channels.fetch(
+      config.chan_staff_bot_notif
+    )) as TextChannel;
+    const memberList = await guild.members.fetch();
+    const taggedMembersWithInvalidNames = memberList.filter(
+      (member) =>
+        member.roles.cache.hasAny(
+          config.role_ab,
+          config.role_ab_pending,
+          config.role_az,
+          config.role_az_pending
+        ) && !utils.isNameValid(member.displayName)
+    );
+    if (taggedMembersWithInvalidNames.size > 0) {
+      staffNotificationChannel.send("`-Bot restart: invalid names detected-`");
+    }
+    taggedMembersWithInvalidNames.forEach((member) => {
+      staffNotificationChannel.send(
+        `${userMention(member.id)} has an invalid name.`
+      );
+    });
+  } catch (error) {
+    console.error(error);
+  }
+  console.log(`${client.user.username} is ready!`);
+});
 
 // If you put this in events it won't detect the removal
 client.on("guildMemberRemove", (member) => {
