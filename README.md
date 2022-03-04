@@ -23,6 +23,7 @@ Prettier formatting will override any eslint warnings with the current configura
 Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. Depending on the implementation of authorization, certain secret values will also be stored in a file likely called 'credentials.json'.
 
 # Starting the Bots
-Development: `npm start dev:watch`
+Development: `npm start`
 
-Production: `npm run prod`
+Production: `npm run compile`
+This creates a `dist` directory containing the compiled js files. Run the `index.js` file in there for better performance.
