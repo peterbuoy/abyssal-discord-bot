@@ -91,7 +91,7 @@ client.on("guildMemberRemove", (member) => {
     console.log("role detected for member that left");
     removeFromSheet(member);
     staffBotNotifChannel.send(
-      `Family Name: ${utils.getFamilyName(
+      `Family Name: ${utils.parseFamilyName(
         member.displayName
       )} has left the server. Please kick them in game`
     );

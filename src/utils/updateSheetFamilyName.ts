@@ -30,7 +30,7 @@ const updateSheetFamilyName = async (
     const row = await sheet.getRows();
     row.forEach(async (row) => {
       if (row["Discord UserID"] === newMember.id) {
-        row["Family Name"] = util.getFamilyName(newMember.displayName);
+        row["Family Name"] = util.parseFamilyName(newMember.displayName);
         await row.save();
       }
     });

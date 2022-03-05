@@ -21,7 +21,7 @@ const addToSheet = async (newMember: GuildMember) => {
     const sheet = doc.sheetsByTitle[sheetTitle];
     const row = await sheet.addRow({
       "Discord UserID": newMember.id,
-      "Family Name": utils.getFamilyName(newMember.displayName),
+      "Family Name": utils.parseFamilyName(newMember.displayName),
       "Join Date": dayjs().format("MM/DD/YYYY"),
     });
   } catch (error) {

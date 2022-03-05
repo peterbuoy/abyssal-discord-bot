@@ -3,7 +3,7 @@ const isNameValid = (name: string): boolean => {
   return regex.test(name);
 };
 
-const getFamilyName = (displayName: string): string => {
+const parseFamilyName = (displayName: string): string => {
   const regex = /<(.*?)>/;
   const famName = regex.exec(displayName);
 
@@ -12,4 +12,4 @@ const getFamilyName = (displayName: string): string => {
 };
 
 // export { collectionContains, isNameValid };
-export default { isNameValid, getFamilyName };
+export default { isNameValid, parseFamilyName };
