@@ -1,10 +1,10 @@
-import { Client, Message, Intents, TextChannel } from "discord.js";
+import { Client, Intents, TextChannel } from "discord.js";
 import fs from "fs";
 import path from "path";
 import WOKCommands from "wokcommands";
 import dotenv from "dotenv";
 import config from "./config.json";
-import { removeFromSheet } from "./eventHandlers/removeFromSheet";
+import { removeFromSheet } from "./utils/removeFromSheet";
 import utils from "./utils/utils";
 import { userMention } from "@discordjs/builders";
 dotenv.config();

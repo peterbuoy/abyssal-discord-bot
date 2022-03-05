@@ -1,10 +1,10 @@
 import { GuildMember, PartialGuildMember, TextChannel } from "discord.js";
 import { userMention } from "@discordjs/builders";
 import config from "../config.json";
-import { addToSheet } from "../eventHandlers/addToSheet";
-import { removeFromSheet } from "../eventHandlers/removeFromSheet";
-import { updateSheetFamilyName } from "../eventHandlers/updateSheetFamilyName";
-import { sendWelcomeMessage } from "../eventHandlers/sendWelcomeMessage";
+import { addToSheet } from "../utils/addToSheet";
+import { removeFromSheet } from "../utils/removeFromSheet";
+import { updateSheetFamilyName } from "../utils/updateSheetFamilyName";
+import { sendWelcomeMessage } from "../utils/sendWelcomeMessage";
 
 import utils from "../utils/utils";
 
