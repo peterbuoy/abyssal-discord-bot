@@ -35,6 +35,7 @@ module.exports = {
         !newMember.roles.cache.has(config.role_az))
     ) {
       removeFromSheet(oldMember);
+      // TODO: remove from war signup if member is in abyssal
     }
 
     // Name check
@@ -50,7 +51,13 @@ module.exports = {
       );
     } else if (
       oldMember.nickname !== newMember.nickname &&
-      utils.isNameValid(newMember.nickname!)
+      utils.isNameValid(newMember.nickname!) &&
+      newMember.roles.cache.hasAny(
+        config.role_ab,
+        config.role_ab_pending,
+        config.role_az,
+        config.role_ab_pending
+      )
     ) {
       staffBotNotifChannel.send(`
       ☑️ Valid Name Change
