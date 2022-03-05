@@ -1,4 +1,4 @@
-import { userMention } from "@discordjs/builders";
+import { roleMention, userMention } from "@discordjs/builders";
 import { Interaction, Message, MessageMentions } from "discord.js";
 import { yesAZRulesButton, noAZRulesButton } from "src/buttons/joinButtons";
 import config from "../config.json";
@@ -28,15 +28,20 @@ module.exports = {
     if (interaction.customId === "azurlane") {
       member?.roles.add(config.role_az_pending);
       interaction.update({
-        content:
-          "You have been tagged as a pending Azurlane member. something something mention az gm",
+        content: `Congratulations on completing the application process! You have been tagged as a pending **<AzurLane>** member! The ${roleMention(
+          config.role_gm_az
+        )} will get to you shortly. If you don't get a ping within 5 minutes, it means that no one is currently available to invite right now. Feel free to ping ${roleMention(
+          config.role_gm_az
+        )} in a few hours to see if we are around!
+        **Please note that your pending tag will be automatically removed in 72 hours. You will have to reapply if you do not get invited within that time**`,
         components: [],
       });
     } else if (interaction.customId === "abyssal") {
       member?.roles.add(config.role_ab_pending);
       interaction.update({
-        content:
-          "You have been tagged as a pending Abyssal member. something something mention war staff to do stuff",
+        content: `you have been tagged as a pending **<Abyssal>** member! A member of ${roleMention(
+          config.role_war_staff
+        )} will get to you shortly to verify your gear and administer a PvP test.`,
         components: [],
       });
     }

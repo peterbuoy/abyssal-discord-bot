@@ -1,6 +1,7 @@
 import { MessageActionRow, MessageComponentInteraction } from "discord.js";
 import { ICommand } from "wokcommands";
 import { abyssalButton, azurlaneButton } from "../buttons/joinButtons";
+import config from "../config.json";
 
 export default {
   name: "join",
@@ -15,6 +16,17 @@ export default {
   cooldown: "60s",
 
   callback: async ({ message }) => {
+    // if message author has roles
+    if (
+      message.member?.roles.cache.hasAny(
+        config.role_ab,
+        config.role_ab_pending,
+        config.role_az,
+        config.role_az_pending
+      )
+    ) {
+      return;
+    }
     const reply =
       "Hi, which guild would you like to join?\n This message will self-destruct in **60** seconds.";
     const row = new MessageActionRow().addComponents(
