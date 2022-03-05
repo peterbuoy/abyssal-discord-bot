@@ -18,12 +18,14 @@ const updateSheetFamilyName = async (
       process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL === undefined ||
       process.env.GOOGLE_PRIVATE_KEY === undefined
     ) {
-      throw new Error("Missing Google Service Account Email or Private Key");
+      throw new Error(
+        `Missing Google Service Account Email or Private Key. Unable to update sheet with new family name for ${newMember.displayName}.`
+      );
     }
 
     await doc.useServiceAccountAuth({
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
-      private_key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
     });
     await doc.loadInfo();
     const sheet = doc.sheetsByTitle[sheetTitle];

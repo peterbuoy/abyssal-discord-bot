@@ -11,9 +11,17 @@ const removeFromSheet = async (oldMember: GuildMember | PartialGuildMember) => {
   }
   try {
     const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
+    if (
+      process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL === undefined ||
+      process.env.GOOGLE_PRIVATE_KEY === undefined
+    ) {
+      throw new Error(
+        `Missing Google Service Account Email or Private Key. Failed to remove ${oldMember.displayName} from their sheet.`
+      );
+    }
     await doc.useServiceAccountAuth({
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
-      private_key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
     });
     await doc.loadInfo();
     const sheet = doc.sheetsByTitle[sheetTitle];

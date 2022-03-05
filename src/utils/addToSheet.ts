@@ -12,14 +12,22 @@ const addToSheet = async (newMember: GuildMember) => {
     sheetTitle = config.az_sheet_title;
   }
   try {
+    if (
+      process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL === undefined ||
+      process.env.GOOGLE_PRIVATE_KEY === undefined
+    ) {
+      throw new Error(
+        `Missing Google Service Account Email or Private Key. Unable to add ${newMember.displayName} to sheet.`
+      );
+    }
     const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
     await doc.useServiceAccountAuth({
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
-      private_key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
     });
     await doc.loadInfo();
     const sheet = doc.sheetsByTitle[sheetTitle];
-    const row = await sheet.addRow({
+    sheet.addRow({
       "Discord UserID": newMember.id,
       "Family Name": utils.parseFamilyName(newMember.displayName),
       "Join Date": dayjs().format("MM/DD/YYYY"),
