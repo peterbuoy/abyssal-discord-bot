@@ -1,5 +1,5 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { GoogleSpreadsheet } from "google-spreadsheet";
+import { getSheetByTitle } from "./getSheetByTitle";
 import util from "../utils/utils";
 import config from "../config.json";
 
@@ -13,24 +13,9 @@ const updateSheetFamilyName = async (
     sheetTitle = config.az_sheet_title;
   }
   try {
-    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
-    if (
-      process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL === undefined ||
-      process.env.GOOGLE_PRIVATE_KEY === undefined
-    ) {
-      throw new Error(
-        `Missing Google Service Account Email or Private Key. Unable to update sheet with new family name for ${newMember.displayName}.`
-      );
-    }
-
-    await doc.useServiceAccountAuth({
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-    });
-    await doc.loadInfo();
-    const sheet = doc.sheetsByTitle[sheetTitle];
-    const row = await sheet.getRows();
-    row.forEach(async (row) => {
+    const sheet = await getSheetByTitle(sheetTitle);
+    const rows = await sheet?.getRows();
+    rows?.forEach(async (row) => {
       if (row["Discord UserID"] === newMember.id) {
         row["Family Name"] = util.parseFamilyName(newMember.displayName);
         await row.save();
