@@ -36,7 +36,7 @@ export default {
         config.role_az,
         config.role_az_pending
       ) ||
-      message.channelId === config.chan_welcome
+      message.channelId !== config.chan_welcome
     ) {
       return;
     }
