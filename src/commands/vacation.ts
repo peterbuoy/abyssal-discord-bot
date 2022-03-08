@@ -8,7 +8,13 @@ export default {
   slash: false,
   cooldown: "30s",
   callback: async ({ message, args }) => {
-    console.log("vacation cmd");
+    // only allow cmd to be used by ab az guild memebers in contact an officer chan
+    if (
+      !message.member?.roles.cache.hasAny(config.role_ab, config.role_az) ||
+      message.channelId !== config.chan_contact_an_officer
+    ) {
+      return;
+    }
     let sheetTitle = "";
     // if they have both they'll be put into ab sheet
     // this should never happen unless war staff, admin, or az gm mess up

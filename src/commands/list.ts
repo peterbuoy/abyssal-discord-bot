@@ -17,6 +17,15 @@ export default {
   syntax: "list <guild> (optional: <sheet>)",
   cooldown: "10s",
   callback: async ({ message, args }) => {
+    if (
+      !message.member?.roles.cache.hasAny(
+        config.role_war_staff,
+        config.role_gm_az,
+        config.role_admin
+      )
+    ) {
+      return;
+    }
     let sheetName = "";
     args[0] = args[0]?.toLowerCase();
     if (args[0] === "ab" || args[0] === "kc" || args[0] === "") {
