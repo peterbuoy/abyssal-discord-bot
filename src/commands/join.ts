@@ -1,12 +1,25 @@
-import { MessageActionRow, MessageComponentInteraction } from "discord.js";
+import { roleMention } from "@discordjs/builders";
+import {
+  ButtonInteraction,
+  Interaction,
+  Message,
+  MessageActionRow,
+  MessageComponentInteraction,
+} from "discord.js";
 import { ICommand } from "wokcommands";
-import { abyssalButton, azurlaneButton } from "../buttons/joinButtons";
+import {
+  abyssalButton,
+  azurlaneButton,
+  yesAZRulesButton,
+  noAZRulesButton,
+} from "../buttons/joinButtons";
 import config from "../config.json";
+import got from "got";
 
 export default {
   name: "join",
   category: "Testing",
-  description: "Starts process of joining guild", // Required for slash commands
+  description: "Starts process of joining guild",
 
   slash: false,
   testOnly: true, // Only register a slash command for the testing guilds
@@ -15,8 +28,7 @@ export default {
   maxArgs: 0,
   cooldown: "60s",
 
-  callback: async ({ message }) => {
-    // if message author has roles
+  callback: async ({ message, member }) => {
     if (
       message.member?.roles.cache.hasAny(
         config.role_ab,
@@ -27,26 +39,89 @@ export default {
     ) {
       return;
     }
-    const reply =
-      "Hi, which guild would you like to join?\n This message will self-destruct in **60** seconds.";
-    const row = new MessageActionRow().addComponents(
+
+    const replyContent =
+      "Hi, which guild would you like to join?\n This process will end in **60** seconds.";
+    const guildChoice = new MessageActionRow().addComponents(
       abyssalButton,
       azurlaneButton
     );
+    const azRuleYesNo = new MessageActionRow().addComponents(
+      yesAZRulesButton,
+      noAZRulesButton
+    );
+    const reply = await message.reply({
+      content: replyContent,
+      components: [guildChoice],
+    });
+    const collector = reply.createMessageComponentCollector({
+      componentType: "BUTTON",
+      time: 59 * 1000,
+    });
 
-    // message is provided for a legacy command
-    try {
-      const replyMessage = await message.reply({
-        content: reply,
-        components: [row],
-      });
-      setTimeout(() => {
-        if (replyMessage.components.length !== 0) {
-          replyMessage.delete();
+    collector.on("collect", (i: ButtonInteraction) => {
+      if (i.user.id !== message.author.id) {
+        got("https://api.kanye.rest/")
+          .then((response) => response.body.slice(9, -1))
+          .then((kanyeQuote) => {
+            i.reply({
+              content: `Your button press is irrelevant like this quote from Kanye West:\n *${kanyeQuote}*`,
+              ephemeral: true,
+            });
+          });
+      } else {
+        i.deferUpdate();
+        switch (i.customId) {
+          case "abyssal":
+            member?.roles.add(config.role_ab_pending);
+            reply.edit({
+              content: `You have been tagged as a pending **<Abyssal>** member! A member of ${roleMention(
+                config.role_war_staff
+              )} will get to you shortly to verify your gear and administer a PvP test.`,
+              components: [],
+            });
+            break;
+          case "azurlane":
+            reply.edit({
+              content:
+                "**Azurlane Rules**\n" +
+                "`1.Leaving discord means leaving the guild\n" +
+                "2.If you are more than 3 days offline you may be kicked.`\n" +
+                "*Please confirm that you are aware of these rules.*",
+              components: [azRuleYesNo],
+            });
+            break;
+          case "yesAZRules":
+            member?.roles.add(config.role_az_pending);
+            reply.edit({
+              content: `Congratulations on completing the application process! You have been tagged as a pending **<AzurLane>** member! The ${roleMention(
+                config.role_gm_az
+              )} will get to you shortly. If you don't get a ping within 5 minutes, it means that no one is currently available to invite right now. Feel free to ping ${roleMention(
+                config.role_gm_az
+              )} in a few hours to see if we are around!
+              **Please note that your pending tag will be automatically removed in 72 hours. You will have to reapply if you do not get invited within that time**`,
+              components: [],
+            });
+            break;
+          case "noAZRules":
+            reply.edit({
+              content: `Join process ended due to saying no to rules.`,
+              components: [],
+            });
+            break;
         }
-      }, 59 * 1000);
-    } catch (error) {
-      console.error(error);
-    }
+      }
+    });
+
+    // Remove buttons and edit message after 59 seconds if they don't interact
+    collector.on("end", () => {
+      if (reply.components.length !== 0) {
+        reply.edit({
+          content:
+            "No guild or answer was selected in time. Join process has ended.",
+          components: [],
+        });
+      }
+    });
   },
 } as ICommand;
