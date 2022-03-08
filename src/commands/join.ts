@@ -28,15 +28,15 @@ export default {
   maxArgs: 0,
   cooldown: "60s",
 
-  callback: async ({ message, member }) => {
+  callback: async ({ message, channel, member }) => {
     if (
-      message.member?.roles.cache.hasAny(
+      member.roles.cache.hasAny(
         config.role_ab,
         config.role_ab_pending,
         config.role_az,
         config.role_az_pending
       ) ||
-      message.channelId !== config.chan_welcome
+      channel.id !== config.chan_welcome
     ) {
       return;
     }
