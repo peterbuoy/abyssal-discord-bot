@@ -1,16 +1,9 @@
-import {
-  Collection,
-  GuildMember,
-  MessageAttachment,
-  MessageReaction,
-  ReactionEmoji,
-  TextChannel,
-  User,
-} from "discord.js";
-import { GoogleSpreadsheet, GoogleSpreadsheetRow } from "google-spreadsheet";
+import { Collection, MessageReaction, TextChannel, User } from "discord.js";
+import dayjs from "dayjs";
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { ICommand } from "wokcommands";
 import config from "../config.json";
+import { userMention } from "@discordjs/builders";
 
 export default {
   name: "update",
@@ -18,8 +11,8 @@ export default {
   description: "starts character, gear update request process",
   slash: false,
   testOnly: true,
-  minArgs: 0, // huh
-  maxArgs: -1, // change later
+  minArgs: 0,
+  maxArgs: -1,
   cooldown: "10s",
   callback: async ({ member, message, args, channel }) => {
     // Only allow usage in #gear-update and by az/ab members
@@ -30,11 +23,12 @@ export default {
       return;
     }
 
-    // Argument parsing from KC Bot, slightly modified'
+    // Contains argument parsing from KC Bot, but HEAVILY modified logic
     // Only allow a single image as an attachment
     if (
       message.attachments.size !== 1 ||
-      message.attachments.first()?.contentType !== "image/png"
+      (message.attachments.first()?.contentType !== "image/jpeg" &&
+        message.attachments.first()?.contentType !== "image/png")
     ) {
       message.reply(
         "Please make sure to attach a single image to the command!"
@@ -52,86 +46,49 @@ export default {
 
     // Dynamically create a collection with the values that need to be updated
     // Use updateInfo to add only the necessary values to the GoogleSpreadsheet
-    const updateInfo: Collection<string, any> = new Collection();
-
+    const updateInfo: Collection<string, string | null> = new Collection();
     const argsLowerCase = args.map((arg) => arg.toLowerCase());
+
+    updateInfo.set("Gear Screenshot", image!.url);
 
     // Character name
     const charNameIndex = argsLowerCase.indexOf("character") + 1;
     if (charNameIndex > 0 && charNameIndex < args.length) {
       const charName = args[charNameIndex];
-      updateInfo.set("charName", charName);
+      updateInfo.set("Character Name", charName);
     }
 
-    // Class Name, two word classes (Dark Knight) must be inputted by without spaces, e.g. dk or darkknight
+    // Class name, two word classes (Dark Knight) must be inputted by without spaces, e.g. dk or darkknight
     const classIndex = argsLowerCase.indexOf("class") + 1;
     if (classIndex > 0 && classIndex < args.length) {
       const className = parseClassName(argsLowerCase[classIndex]);
-      updateInfo.set("className", className);
+      updateInfo.set("Class", className);
+      try {
+        // Assign class role. className from config are all lower case with underscores instead of spaces
+        const class_roles: { [className: string]: string } = config.class_roles;
+        const jsonClassName = updateInfo
+          .get("Class")!
+          .toLowerCase()
+          .split(" ")
+          .join("_");
+        const classId = class_roles[jsonClassName];
+        const allClassIds: Array<string> = Object.values(class_roles);
+        message.member?.roles
+          .remove(allClassIds)
+          .then((guildMember) => guildMember.roles.add(classId));
+      } catch (err) {
+        console.log(err);
+      }
     }
-    try {
-      // Assign class role. className from config are all lower case with underscores instead of spaces
-      const class_roles: { [className: string]: string } = config.class_roles;
-      const jsonClassName = updateInfo
-        .get("className")
-        .toLowerCase()
-        .split(" ")
-        .join("_");
-      const classId = class_roles[jsonClassName];
 
-      // Get roles of member, remove ALL roles if they are in config.class_roles
-      // Add the class role
-      const classesToRemove: Array<string> = [];
-      message.member?.roles.cache.filter((value) => {
-        value;
-      });
-      message.member?.roles.cache.forEach((id: any) => {
-        if (Object.values(class_roles).indexOf(id) > -1 && id != classId) {
-          classesToRemove.push(id);
-        }
-      });
-      message.member?.roles
-        .remove(classesToRemove)
-        .then((guildMember) => guildMember.roles.add(classId));
-    } catch (err) {
-      console.log(err);
-    }
-    const level = 0;
-    let levelIndex = -1;
-    let levelInfo: string | undefined | number = "";
-
-    if (argsLowerCase.includes("level")) {
-      levelIndex = argsLowerCase.indexOf("level") + 1;
-      if (levelIndex > 0 && levelIndex < args.length) {
-        levelInfo = args[levelIndex];
-      }
-    } else if (argsLowerCase.includes("lvl")) {
-      levelIndex = argsLowerCase.indexOf("lvl") + 1;
-      if (levelIndex > 0 && levelIndex < args.length) {
-        levelInfo = args[levelIndex];
-      }
-    } else if (argsLowerCase.includes("lv")) {
-      levelIndex = argsLowerCase.indexOf("lv") + 1;
-      if (levelIndex > 0 && levelIndex < args.length) {
-        levelInfo = args[levelIndex];
-      }
-    } else {
-      levelInfo = argsLowerCase.find((e) => {
-        return e.includes("level") || e.includes("lvl") || e.includes("lv");
-      });
-
-      if (levelInfo) {
-        levelInfo = levelInfo.replace(/level/g, "");
-        levelInfo = levelInfo.replace(/lvl/g, "");
-        levelInfo = levelInfo.replace(/lv/g, "");
-      }
+    // Level
+    const levelIndex = argsLowerCase.indexOf("level") + 1;
+    if (levelIndex > 0 && levelIndex < args.length) {
+      const level = args[levelIndex];
+      updateInfo.set("Level", level);
     }
 
     // Gear Score AP/AAP/DP
-    let ap = -1;
-    let aap = -1;
-    let dp = -1;
-
     // can't have 0/0/0 using this regex, only 1 - 999 accepted
     let gsInfo: any = argsLowerCase.find((e) => {
       return (
@@ -139,80 +96,154 @@ export default {
         /^[1-9]\d{0,2}\/0\/[1-9]\d{0,2}$/g.test(e)
       );
     });
-
     if (gsInfo) {
       gsInfo = gsInfo.split("/");
-      ap = parseInt(gsInfo[0]);
-      aap = parseInt(gsInfo[1]);
-      dp = parseInt(gsInfo[2]);
+      const ap = gsInfo[0];
+      const aap = gsInfo[1];
+      const dp = gsInfo[2];
+      if (ap) updateInfo.set("AP", ap);
+      if (aap) updateInfo.set("Awaken AP", aap);
+      if (dp) updateInfo.set("DP", dp);
+      if (ap && aap && dp) {
+        const gearScore = (
+          Math.max(parseInt(ap), parseInt(aap)) + parseInt(dp)
+        ).toString();
+        updateInfo.set("Gear Score", gearScore);
+      }
     }
 
     // Confirmation message
     let msg = "";
-    if (updateInfo.get("charName")) {
-      msg += `\n**Character Name** - ${updateInfo.get("charName")}`;
+    if (updateInfo.get("Character Name")) {
+      msg += `\n**Character Name** - ${updateInfo.get("Character Name")}`;
     }
-    if (
-      updateInfo.get("className") &&
-      updateInfo.get("charName") !== "INVALID"
-    ) {
-      msg += `\n**Class** - ${updateInfo.get("charName")}`;
+    if (updateInfo.get("Class") && updateInfo.get("Class") !== "INVALID") {
+      msg += `\n**Class** - ${updateInfo.get("Class")}`;
     }
-    if (level > 0 && level < 100) msg += `\n**Level** - ${level}`;
-    if (ap > 0) msg += `\n**AP** - ${ap}`;
-    if (aap >= 0) msg += `\n**AAP** - ${aap}`;
-    if (dp > 0) msg += `\n**DP** - ${dp}`;
+    if (updateInfo.get("Level"))
+      msg += `\n**Level** - ${updateInfo.get("Level")}`;
+    if (updateInfo.get("AP")) msg += `\n**AP** - ${updateInfo.get("AP")}`;
+    if (updateInfo.get("Awaken AP"))
+      msg += `\n**AAP** - ${updateInfo.get("Awaken AP")}`;
+    if (updateInfo.get("DP")) msg += `\n**DP** - ${updateInfo.get("DP")}`;
 
-    // Consider rewriting this with async and await since we
-    // should reference previously determined values for readability
     if (msg) {
-      message.channel
-        .send(
+      try {
+        const gearUpdateMsg = await message.channel.send(
           `**__Update Requested by__** ${message.author}\n` +
             `*Please note that your update is now pending review by War Staff.
         Until it is approved, you will **not** see any changes reflected*\n` +
             msg
-        )
-        .then((m) => {
-          const gearRequestChan = m.guild?.channels?.cache.get(
-            config.chan_gear_requests
-          ) as TextChannel;
-          return gearRequestChan.send(
-            `**__Update Requested by__** ${message.author} ${m.id}\n` +
-              msg +
-              `\n**Screenshot** - ${image?.url}`
-          );
-        })
-        .then((gearRequestChanMsg) => {
-          gearRequestChanMsg
-            .react("✅")
-            .then((r: MessageReaction) => {
-              r.message.react("🚫");
-              const filter = (reaction: MessageReaction, user: User) =>
-                !user.bot;
-              const collector = r.message.createReactionCollector({
-                filter,
-                maxUsers: 1,
-              });
-              collector.on("collect", (reaction: MessageReaction) => {
-                if (reaction.emoji.name === "✅") {
-                  // Approve
-                  // Update the character
-                  // add current info to dump
-                  // add to sheet
-                  // update message in gear-update
-                  r.message.delete();
-                } else if (reaction.emoji.name === "🚫") {
-                  // Deny
-                  // update message in gear-update
-                  r.message.delete();
-                }
-              });
-            })
-            .catch((error) => {
-              console.error(error);
-            });
+        );
+        const gearRequestChan = message.guild?.channels.cache.get(
+          config.chan_gear_requests
+        ) as TextChannel;
+        const gearRequestMsg = await gearRequestChan.send(
+          `**__Update Requested by__** ${message.author}\n` +
+            msg +
+            `\n**Screenshot** - ${image?.url}`
+        );
+        await gearRequestMsg.react("✅");
+        await gearRequestMsg.react("🚫");
+        const filter = (reaction: MessageReaction, user: User) => !user.bot;
+        const collector = gearRequestMsg.createReactionCollector({
+          filter,
+          maxUsers: 1,
         });
+        collector.on(
+          "collect",
+          async (reaction: MessageReaction, reactionUser: User) => {
+            if (reaction.emoji.name === "✅") {
+              updateInfo.set("Awaken AP Gained", null);
+              updateInfo.set(
+                "Gear Timestamp",
+                dayjs().format("M/D/YYYY h:mm A")
+              );
+              gearRequestMsg.delete();
+              let sheetTitle = "";
+              let dumpSheetTitle = "";
+              if (member?.roles.cache.has(config.role_ab)) {
+                sheetTitle = config.ab_sheet_title;
+                dumpSheetTitle = config.ab_dump_sheet_title;
+              } else if (member?.roles.cache.has(config.role_az)) {
+                sheetTitle = config.az_sheet_title;
+                dumpSheetTitle = config.az_dump_sheet_title;
+              } else {
+                throw Error("Member does not have a valid role");
+              }
+              const kcSheet = await getSheetByTitle(config.ab_sheet_title);
+              const kcSheetRows = await kcSheet?.getRows();
+              const targetRow = kcSheetRows?.find(
+                (row) => row["Discord UserID"] === member.user.id
+              );
+              const kcDumpSheet = await getSheetByTitle(
+                config.ab_dump_sheet_title
+              );
+              // Move current info to Dump Sheet
+              if (targetRow !== undefined) {
+                await kcDumpSheet?.addRow({
+                  "Discord UserID": targetRow["Discord UserID"],
+                  "Family Name": targetRow["Family Name"],
+                  "Character Name": targetRow["Character Name"],
+                  Class: targetRow["Class"],
+                  Level: targetRow["Level"],
+                  "Gear Score": targetRow["Gear Score"],
+                  AP: targetRow["AP"],
+                  "Awaken AP": targetRow["Awaken AP"],
+                  DP: targetRow["DP"],
+                  "Gear Screenshot": targetRow["Gear Screenshot"],
+                  "Join Date": targetRow["Join Date"],
+                });
+                // Update member information in sheet, BEHOLD the power of laziness and collections
+                updateInfo.forEach((value, columnName) => {
+                  targetRow[columnName] = value;
+                });
+                await targetRow.save();
+              }
+
+              gearUpdateMsg.edit(
+                `**__Update Requested by__** ${message.author}\n` +
+                  `*Please note that your update is now pending review by War Staff.
+          Until it is approved, you will **not** see any changes reflected*\n` +
+                  msg +
+                  `\n✅ Approved by ${userMention(
+                    reactionUser.id
+                  )} at ${updateInfo.get("Gear Timestamp")} PST
+                  )}\n Your new gear info has been updated. 
+                If you are signed up for war, you will need to sign up again for the changes to be reflected.`
+              );
+            } else if (reaction.emoji.name === "🚫") {
+              gearRequestMsg.delete();
+              gearUpdateMsg.edit(
+                `**__Update Requested by__** ${message.author}\n` +
+                  `*Please note that your update is now pending review by War Staff. Until it is approved, you will **not** see any changes reflected*\n` +
+                  msg +
+                  `\n🚫 Denied by ${userMention(
+                    reactionUser.id
+                  )} at ${updateInfo.get("Gear Timestamp")} PST`
+              );
+              channel.send({
+                content:
+                  userMention(member.id) +
+                  " ,your gear submission was denied! Please make sure all your info is correct and your screenshot contains everything highlighted below! Thank you!",
+                files: [
+                  {
+                    // Careful, process.cwd() depends on where you actually start the file (could be .sh or .bat somewhere)
+                    // https://stackoverflow.com/questions/13051961/proper-way-to-reference-files-relative-to-application-root-in-node-js
+                    // "will return the root path for the file that initiated the running process"
+                    // ~ deimosaffair
+                    attachment: `${process.cwd()}/src/assets/gear.jpg`,
+                    name: "gear.jpg",
+                    description: "gear update photo",
+                  },
+                ],
+              });
+            }
+          }
+        );
+      } catch (error) {
+        return console.error(error);
+      }
     } else {
       return message.reply(
         "I couldn't find any relevant info in your command. Please try again!"
