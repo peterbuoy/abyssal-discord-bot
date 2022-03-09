@@ -12,7 +12,7 @@ export default {
   slash: false,
   testOnly: true,
   minArgs: 0,
-  maxArgs: -1,
+  maxArgs: 8,
   cooldown: "10s",
   callback: async ({ member, message, args, channel }) => {
     // Only allow usage in #gear-update and by az/ab members
