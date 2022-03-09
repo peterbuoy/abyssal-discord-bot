@@ -18,8 +18,7 @@ const getSheetByTitle = async (sheetName: string) => {
       private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
     });
     await doc.loadInfo();
-    const sheet = doc.sheetsByTitle[sheetName];
-    return sheet;
+    return doc.sheetsByTitle[sheetName];
   } catch (error) {
     console.error(error);
   }

@@ -34,6 +34,7 @@ module.exports = {
       (oldMember.roles.cache.has(config.role_az) &&
         !newMember.roles.cache.has(config.role_az))
     ) {
+      // TODO: Add to dump sheet
       removeFromSheet(oldMember);
       // TODO: remove from war signup if member is in abyssal
     }
