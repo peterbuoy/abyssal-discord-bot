@@ -1,4 +1,5 @@
 import {
+  Collection,
   GuildMember,
   MessageAttachment,
   MessageReaction,
@@ -21,18 +22,16 @@ export default {
   maxArgs: -1, // change later
   cooldown: "10s",
   callback: async ({ member, message, args, channel }) => {
+    // Only allow usage in #gear-update and by az/ab members
     if (
       channel.id !== config.chan_gear_update ||
-      !member.roles.cache.hasAny(
-        config.role_ab,
-        config.role_az,
-        config.role_war_staff
-      )
+      !member.roles.cache.hasAny(config.role_ab, config.role_az)
     ) {
       return;
     }
-    // Taken from KC Bot
 
+    // Argument parsing from KC Bot, slightly modified'
+    // Only allow a single image as an attachment
     if (
       message.attachments.size !== 1 ||
       message.attachments.first()?.contentType !== "image/png"
@@ -42,32 +41,50 @@ export default {
       );
       return;
     }
-    // eslint-disable-next-line prefer-const
     const image = message.attachments.first();
 
-    // character OchacoReto class DK lvl61 54% 271/284/312
-    // Parse arguments, taken from KC Bot, seems insane, maybe rewrite
+    // Example usage: character OchacoReto class DK lvl 61 271/284/312
+    // At least ONE "arg" must be provided e.g.
+    // character OchacoReto OR class DK OR lvl 62 OR 271/284/312
+
+    // We can simplify the code by not worrying TOO much about data integrity
+    // since gear requests are manually verified anyway.
+
+    // Dynamically create a collection with the values that need to be updated
+    // Use updateInfo to add only the necessary values to the GoogleSpreadsheet
+    const updateInfo: Collection<string, any> = new Collection();
+
+    const argsLowerCase = args.map((arg) => arg.toLowerCase());
+
     // Character name
-    const argsLower = args.map((a) => a.toLowerCase());
-    let charIndex = argsLower.indexOf("character") + 1;
-    if (charIndex <= 0) charIndex = argsLower.indexOf("char") + 1;
+    const charNameIndex = argsLowerCase.indexOf("character") + 1;
+    if (charNameIndex > 0 && charNameIndex < args.length) {
+      const charName = args[charNameIndex];
+      updateInfo.set("charName", charName);
+    }
 
-    let charName = "";
-    if (charIndex > 0 && charIndex < args.length) charName = args[charIndex];
-
-    const classIndex = argsLower.indexOf("class") + 1;
-
-    // Class Name
-    let className = "";
-    if (classIndex > 0 && classIndex < argsLower.length)
-      className = parseClassName(argsLower[classIndex]);
+    // Class Name, two word classes (Dark Knight) must be inputted by without spaces, e.g. dk or darkknight
+    const classIndex = argsLowerCase.indexOf("class") + 1;
+    if (classIndex > 0 && classIndex < args.length) {
+      const className = parseClassName(argsLowerCase[classIndex]);
+      updateInfo.set("className", className);
+    }
     try {
-      // Assign class role
-      const class_roles: { [key: string]: string } = config.class_roles;
-      const classId = class_roles[className.toLowerCase().split(" ").join("_")];
+      // Assign class role. className from config are all lower case with underscores instead of spaces
+      const class_roles: { [className: string]: string } = config.class_roles;
+      const jsonClassName = updateInfo
+        .get("className")
+        .toLowerCase()
+        .split(" ")
+        .join("_");
+      const classId = class_roles[jsonClassName];
 
-      // Remove any other applied class roles
+      // Get roles of member, remove ALL roles if they are in config.class_roles
+      // Add the class role
       const classesToRemove: Array<string> = [];
+      message.member?.roles.cache.filter((value) => {
+        value;
+      });
       message.member?.roles.cache.forEach((id: any) => {
         if (Object.values(class_roles).indexOf(id) > -1 && id != classId) {
           classesToRemove.push(id);
@@ -75,31 +92,31 @@ export default {
       });
       message.member?.roles
         .remove(classesToRemove)
-        .then((huh) => message.member?.roles.add(classId));
+        .then((guildMember) => guildMember.roles.add(classId));
     } catch (err) {
       console.log(err);
     }
-    let level = 0;
+    const level = 0;
     let levelIndex = -1;
     let levelInfo: string | undefined | number = "";
 
-    if (argsLower.includes("level")) {
-      levelIndex = argsLower.indexOf("level") + 1;
+    if (argsLowerCase.includes("level")) {
+      levelIndex = argsLowerCase.indexOf("level") + 1;
       if (levelIndex > 0 && levelIndex < args.length) {
         levelInfo = args[levelIndex];
       }
-    } else if (argsLower.includes("lvl")) {
-      levelIndex = argsLower.indexOf("lvl") + 1;
+    } else if (argsLowerCase.includes("lvl")) {
+      levelIndex = argsLowerCase.indexOf("lvl") + 1;
       if (levelIndex > 0 && levelIndex < args.length) {
         levelInfo = args[levelIndex];
       }
-    } else if (argsLower.includes("lv")) {
-      levelIndex = argsLower.indexOf("lv") + 1;
+    } else if (argsLowerCase.includes("lv")) {
+      levelIndex = argsLowerCase.indexOf("lv") + 1;
       if (levelIndex > 0 && levelIndex < args.length) {
         levelInfo = args[levelIndex];
       }
     } else {
-      levelInfo = argsLower.find((e) => {
+      levelInfo = argsLowerCase.find((e) => {
         return e.includes("level") || e.includes("lvl") || e.includes("lv");
       });
 
@@ -109,38 +126,14 @@ export default {
         levelInfo = levelInfo.replace(/lv/g, "");
       }
     }
-    // Experience
-    let exp = -1;
 
-    if (levelInfo && !isNaN(levelInfo as unknown as number)) {
-      //if (levelInfo != '' && !isNaN(levelInfo)) {
-      level = parseInt(levelInfo);
-
-      const expDecimal = parseFloat(levelInfo);
-
-      // integer exp only. just to make it simple.
-      if (expDecimal - level > 0) {
-        // careful here, this was originally wrapped in a parseInt
-        exp = Math.round((expDecimal - level) * 100);
-      }
-    }
-
-    let expInfo = argsLower.find((e) => {
-      return e.includes("%");
-    });
-
-    if (expInfo) {
-      //if (expInfo != '' && !isNaN(expInfo)) {
-      expInfo = expInfo.replace(/%/g, "");
-      if (!isNaN(expInfo as unknown as number)) exp = parseInt(expInfo);
-    }
     // Gear Score AP/AAP/DP
     let ap = -1;
     let aap = -1;
     let dp = -1;
 
     // can't have 0/0/0 using this regex, only 1 - 999 accepted
-    let gsInfo: any = argsLower.find((e) => {
+    let gsInfo: any = argsLowerCase.find((e) => {
       return (
         /^[1-9]\d{0,2}\/[1-9]\d{0,2}\/[1-9]\d{0,2}$/g.test(e) ||
         /^[1-9]\d{0,2}\/0\/[1-9]\d{0,2}$/g.test(e)
@@ -149,7 +142,6 @@ export default {
 
     if (gsInfo) {
       gsInfo = gsInfo.split("/");
-
       ap = parseInt(gsInfo[0]);
       aap = parseInt(gsInfo[1]);
       dp = parseInt(gsInfo[2]);
@@ -157,14 +149,16 @@ export default {
 
     // Confirmation message
     let msg = "";
-    if (charName) {
-      msg += `\n**Character Name** - ${charName}`;
+    if (updateInfo.get("charName")) {
+      msg += `\n**Character Name** - ${updateInfo.get("charName")}`;
     }
-    if (className && className != "INVALID") {
-      msg += `\n**Class** - ${className}`;
+    if (
+      updateInfo.get("className") &&
+      updateInfo.get("charName") !== "INVALID"
+    ) {
+      msg += `\n**Class** - ${updateInfo.get("charName")}`;
     }
     if (level > 0 && level < 100) msg += `\n**Level** - ${level}`;
-    if (exp >= 0 && exp < 100) msg += `\n**Experience** - ${exp}%`;
     if (ap > 0) msg += `\n**AP** - ${ap}`;
     if (aap >= 0) msg += `\n**AAP** - ${aap}`;
     if (dp > 0) msg += `\n**DP** - ${dp}`;
