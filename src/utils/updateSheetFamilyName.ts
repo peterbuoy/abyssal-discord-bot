@@ -15,6 +15,7 @@ const updateSheetFamilyName = async (
   try {
     const sheet = await getSheetByTitle(sheetTitle);
     const rows = await sheet?.getRows();
+    // uses forEach instead of find because there may be replicated users (consider fixing?)
     rows?.forEach(async (row) => {
       if (row["Discord UserID"] === newMember.id) {
         row["Family Name"] = util.parseFamilyName(newMember.displayName);
