@@ -62,7 +62,7 @@ module.exports = {
       const targetRow = rows?.find(
         (row) => row["Discord UserID"] === oldMember.user.id
       );
-      const dumpSheet = await getSheetByTitle(config.ab_dump_sheet_title);
+      const dumpSheet = await getSheetByTitle(dumpSheetTitle);
       // Move current info to Dump Sheet
       if (targetRow !== undefined) {
         await dumpSheet?.addRow({
