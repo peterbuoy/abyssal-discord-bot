@@ -38,14 +38,14 @@ export default {
     }
     const sheet = await getSheetByTitle(sheetName);
     const rows = await sheet?.getRows();
-    // Vacation is not implemented because no one cares about it
-    // collection contains <fam name, [userID, vacation]>
+
+    // Collection contains <userID, [famName, vacation]>
     const memberCollection: Collection<string, [string, string]> =
       new Collection();
     rows?.forEach((row) => {
       if (row["Discord UserID"] !== "") {
-        memberCollection.set(row["Family Name"], [
-          row["Discord UserID"],
+        memberCollection.set(row["Discord UserID"], [
+          row["Family Name"],
           row["Vacation Info"],
         ]);
       }
@@ -55,10 +55,10 @@ export default {
 
     let count = 1;
     let memberListMessage = "";
-    memberCollection.forEach((key) => {
+    memberCollection.forEach((value, key) => {
       const paddedCountStr = count.toString().padStart(3, "0");
-      memberListMessage += `\`${paddedCountStr}\`:${userMention(key[0])} ${
-        key[1] ? `~**VACATION**: ${key[1]}` : ""
+      memberListMessage += `\`${paddedCountStr}\`:${userMention(key)} ${
+        value[1] ? `~**VACATION**: ${value[1]}` : ""
       }\n`;
       count++;
       if (count % 26 == 0) {
