@@ -12,7 +12,7 @@ import { updateSheetFamilyName } from "../utils/updateSheetFamilyName";
 import { sendWelcomeMessage } from "../utils/sendWelcomeMessage";
 
 import utils from "../utils/utils";
-import { getSheetByTitle } from "src/utils/getSheetByTitle";
+import { getSheetByTitle } from "../utils/getSheetByTitle";
 
 module.exports = {
   name: "guildMemberUpdate",
