@@ -171,17 +171,19 @@ export default {
               } else {
                 throw Error("Member does not have a valid role");
               }
-              const kcSheet = await getSheetByTitle(config.ab_sheet_title);
-              const kcSheetRows = await kcSheet?.getRows();
-              const targetRow = kcSheetRows?.find(
+              // This functionality to add member info to the dumpsheet will be replicated
+              // in the guildMemberUpdate event. Consider writing a function?
+              const sheet = await getSheetByTitle(sheetTitle);
+              const rows = await sheet?.getRows();
+              const targetRow = rows?.find(
                 (row) => row["Discord UserID"] === member.user.id
               );
-              const kcDumpSheet = await getSheetByTitle(
+              const dumpSheet = await getSheetByTitle(
                 config.ab_dump_sheet_title
               );
               // Move current info to Dump Sheet
               if (targetRow !== undefined) {
-                await kcDumpSheet?.addRow({
+                await dumpSheet?.addRow({
                   "Discord UserID": targetRow["Discord UserID"],
                   "Family Name": targetRow["Family Name"],
                   "Character Name": targetRow["Character Name"],
