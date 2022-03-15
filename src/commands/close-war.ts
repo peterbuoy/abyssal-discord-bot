@@ -2,6 +2,7 @@ import pool from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config.json";
 import utils from "../utils/utils";
+import { TextChannel } from "discord.js";
 
 export default {
   name: "close-war",
@@ -25,8 +26,16 @@ export default {
     const currentWar = await pool.query(
       "UPDATE warsignup SET is_active = false WHERE is_active = true RETURNING name, date_of_war"
     );
-    if (currentWar.rowCount < 1) {
+    if (currentWar.rowCount === 1) {
       message.reply(
+        `**${currentWar.rows[0].name}** was closed by <${utils.parseFamilyName(
+          member.displayName
+        )}>`
+      );
+      const attendanceChannel = message.client.channels.cache.get(
+        config.chan_attendance_log
+      ) as TextChannel;
+      attendanceChannel.send(
         `**${currentWar.rows[0].name}** was closed by <${utils.parseFamilyName(
           member.displayName
         )}>`
