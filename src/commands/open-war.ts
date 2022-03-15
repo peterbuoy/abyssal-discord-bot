@@ -26,7 +26,7 @@ export default {
     ) {
       return;
     }
-    const warName = args[0].replace("_", " ");
+    const warName = args[0].split("_").join(" ");
     console.log(args[1]);
     let warDate = "";
     try {
