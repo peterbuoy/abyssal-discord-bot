@@ -1,7 +1,6 @@
 import pool from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config.json";
-import utils from "../utils/utils";
 import dayjs from "dayjs";
 
 export default {
@@ -13,10 +12,7 @@ export default {
   minArgs: 0,
   maxArgs: 0,
   syntax: "war-info",
-  cooldown: "5s",
   callback: async ({ message, channel }) => {
-    // Nice to have: await user confirmation that this command will overwrite the active war
-    // Only allow in #warbot-spam and only usable by war staff
     if (
       channel.id !== config.chan_war_bot_spam ||
       !message.member?.roles.cache.has(config.role_war_staff)
@@ -24,33 +20,30 @@ export default {
       return;
     }
     const currentWar = await pool.query(
-      "SELECT * FROM warsignup WHERE is_active = true"
+      "SELECT * FROM warsignup WHERE is_active = true LIMIT 1"
     );
-    console.log(currentWar.rows);
-    if (currentWar.rowCount === 1) {
-      message.reply(
-        `Name: ${currentWar.rows[0].name}\n` +
-          `Date: ${dayjs(currentWar.rows[0].date_of_war).format(
-            "MM/DD/YYYY"
-          )}\n` +
-          `Cap: ${
-            currentWar.rows[0].attendee_cap
-              ? currentWar.rows[0].attendee_cap
-              : "None"
-          }\n` +
-          `Min GS: ${
-            currentWar.rows[0].min_gs ? currentWar.rows[0].min_gs : "None"
-          }\n` +
-          `PVP Prof: ${
-            currentWar.rows[0].require_pvp_proficiency
-              ? "NOT REQUIRED"
-              : "REQUIRED"
-          }
-			`
-      );
-    } else {
-      console.error("Error: more than one war is active or there is no war.");
-      message.reply("More than one war is active or there is no war!");
+    if (currentWar.rowCount === 0) {
+      return message.reply("There is no war in Ba Sing Se!");
     }
+    message.reply(
+      `Name: ${currentWar.rows[0].name}\n` +
+        `Date: ${dayjs(currentWar.rows[0].date_of_war).format(
+          "MM/DD/YYYY"
+        )}\n` +
+        `Cap: ${
+          currentWar.rows[0].attendee_cap
+            ? currentWar.rows[0].attendee_cap
+            : "None"
+        }\n` +
+        `Min GS: ${
+          currentWar.rows[0].min_gs ? currentWar.rows[0].min_gs : "None"
+        }\n` +
+        `PVP Prof: ${
+          currentWar.rows[0].require_pvp_proficiency
+            ? "NOT REQUIRED"
+            : "REQUIRED"
+        }
+    `
+    );
   },
 } as ICommand;
