@@ -2,8 +2,9 @@ import dayjs from "dayjs";
 import pool from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config.json";
-import { TextChannel } from "discord.js";
+import { MessageEmbed, TextChannel } from "discord.js";
 import utils from "../utils/utils";
+import { codeBlock } from "@discordjs/builders";
 
 export default {
   name: "open-war",
@@ -16,7 +17,7 @@ export default {
   expectedArgs: "<War_Name> <MM/DD/YYYY>",
   syntax: "open-war <War_Name> <Date MM/DD/YYYY>",
   cooldown: "5s",
-  callback: async ({ member, message, channel, args }) => {
+  callback: async ({ client, member, message, channel, args }) => {
     // Nice to have: await user confirmation that this command will overwrite the active war
     // Only allow in #warbot-spam and only usable by war staff
     if (
@@ -48,7 +49,7 @@ export default {
         message.reply(
           `You have opened up a war:\nName: ${warName}\nDate: ${warDate}`
         );
-        const attendanceChannel = message.client.channels.cache.get(
+        const attendanceChannel = client.channels.cache.get(
           config.chan_attendance_log
         ) as TextChannel;
         attendanceChannel.send(
@@ -57,5 +58,41 @@ export default {
           )}>🎉 `
         );
       });
+    const nodeWarSignupChan = client.channels.cache.get(
+      config.chan_node_war_signup
+    ) as TextChannel;
+    nodeWarSignupChan.messages
+      .fetch()
+      .then((messages) => messages.forEach((m) => m.delete()));
+
+    const exampleEmbed = new MessageEmbed()
+      .setColor("#0099ff")
+      .setTitle(`**${warName}**`)
+      .addFields(
+        { name: "Date", value: warDate },
+        {
+          name: "Instructions",
+          value: "Click the 🅱️ below to sign up or unsignup from war",
+        }
+      )
+      .setTimestamp();
+
+    nodeWarSignupChan
+      .send({ embeds: [exampleEmbed] })
+      .then((msg) => msg.react("🅱️"))
+      .catch((err) => console.error(err));
+
+    const familyName = "Family Name".padEnd(17, " ");
+    const characterName = "Character Name".padEnd(17, " ");
+    const className = "Class".padEnd(12, " ");
+    const lvl = "Lv".padEnd(4, " ");
+    const gs = "GS".padEnd(5, " ");
+    const pvp = "PVP".padEnd(4, " ");
+    const time = "Time (PT)";
+    nodeWarSignupChan.send(
+      codeBlock(
+        `## ${familyName}${characterName}${className}${lvl}${gs}${pvp}${time}`
+      )
+    );
   },
 } as ICommand;

@@ -14,7 +14,7 @@ export default {
   maxArgs: 0,
   syntax: "close-war",
   cooldown: "5s",
-  callback: async ({ member, message, channel }) => {
+  callback: async ({ client, member, message, channel }) => {
     // Nice to have: await user confirmation that this command will overwrite the active war
     // Only allow in #warbot-spam and only usable by war staff
     if (
@@ -32,14 +32,20 @@ export default {
           member.displayName
         )}>`
       );
-      const attendanceChannel = message.client.channels.cache.get(
+      const attendanceChannel = client.channels.cache.get(
         config.chan_attendance_log
+      ) as TextChannel;
+      const nodeWarSignupChan = client.channels.cache.get(
+        config.chan_node_war_signup
       ) as TextChannel;
       attendanceChannel.send(
         `**${currentWar.rows[0].name}** was closed by <${utils.parseFamilyName(
           member.displayName
         )}>`
       );
+      nodeWarSignupChan.messages
+        .fetch()
+        .then((messages) => messages.forEach((m) => m.delete()));
     } else {
       console.error("Error: more than one war was closed.");
       message.reply("There is no war to close!");
