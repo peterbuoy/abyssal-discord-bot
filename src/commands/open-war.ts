@@ -81,7 +81,8 @@ export default {
       .send({ embeds: [exampleEmbed] })
       .then((msg) => msg.react("🅱️"))
       .catch((err) => console.error(err));
-
+    // An emoji collector will be created when the bot is started in the "ready" event
+    // This is NOT ideal but if the bot is reset the 🅱️ collector must start again somehow
     const familyName = "Family Name".padEnd(17, " ");
     const characterName = "Character Name".padEnd(17, " ");
     const className = "Class".padEnd(12, " ");
