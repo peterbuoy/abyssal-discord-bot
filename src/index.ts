@@ -1,4 +1,12 @@
-import { Client, Intents, TextChannel } from "discord.js";
+import {
+  Client,
+  GuildMember,
+  Intents,
+  MessageReaction,
+  ReactionEmoji,
+  TextChannel,
+  User,
+} from "discord.js";
 import fs from "fs";
 import path from "path";
 import WOKCommands from "wokcommands";
@@ -7,6 +15,9 @@ import config from "./config.json";
 import { removeFromSheet } from "./utils/removeFromSheet";
 import utils from "./utils/utils";
 import { userMention } from "@discordjs/builders";
+import { getSheetByTitle } from "./utils/getSheetByTitle";
+import pool from "./db/index";
+import dayjs from "dayjs";
 dotenv.config();
 
 console.log("Bot is starting...");
@@ -39,7 +50,7 @@ const eventFiles = fs
   }
 })();
 
-client.on("ready", async () => {
+client.on("ready", async (client) => {
   if (!client.user || !client.application) {
     return;
   }
@@ -78,7 +89,94 @@ client.on("ready", async () => {
   } catch (error) {
     console.error(error);
   }
+
   console.log(`${client.user.username} is ready!`);
+  const nodeWarSignupChan = client.channels.cache.get(
+    config.chan_node_war_signup
+  ) as TextChannel;
+  nodeWarSignupChan.messages
+    .fetch()
+    .then((messages) => {
+      const embedMessage = messages.find(
+        (message) => message.author.bot && message.embeds.length > 0
+      );
+      if (embedMessage) {
+        const filter = (reaction: MessageReaction, user: User) => {
+          const member = client.guilds.cache
+            .get(config.id_guild)
+            ?.members.cache.get(user.id);
+          return (
+            (reaction.emoji.name === "✅" || reaction.emoji.name === "🚫") &&
+            member!.roles.cache.hasAll(
+              config.role_ab
+              // config.role_pvp_proficient
+            )
+          );
+        };
+        const collector = embedMessage.createReactionCollector({ filter });
+        collector.on("collect", async (reaction, user) => {
+          reaction.users.remove(user.id);
+          console.log(`${user.username} reacted with ${reaction.emoji.name}`);
+          if (reaction.emoji.name === "✅") {
+            // pull data from google sheet
+            const sheet = await getSheetByTitle(config.ab_sheet_title);
+            const rows = await sheet?.getRows();
+            const userInfo = rows?.find(
+              (row) => row["Discord UserID"] === user.id
+            );
+
+            try {
+              if (userInfo === undefined) {
+                throw new Error(
+                  "Could not find user in sheet when signing up for Node War"
+                );
+              }
+              if (userInfo["Gear Score"] < config.ab_min_gear_score) {
+                throw new Error(
+                  `User ${user.username} does not meet minimum gear score requirement but attempted to sign up for Node War`
+                );
+              }
+              const values = [
+                JSON.stringify({
+                  [user.id]: {
+                    family_name: userInfo["Family Name"] || "none",
+                    character_name: userInfo["Character Name"]
+                      ? userInfo["Character Name"]
+                      : "none",
+                    class: userInfo["Class"] ? userInfo["Class"] : "none",
+                    lvl: userInfo["Level"] ? userInfo["Level"] : 0,
+                    gs: userInfo["Gear Score"] ? userInfo["Gear Score"] : 0,
+                    timestamp: dayjs().format("ddd, h:hh A"),
+                  },
+                }),
+              ];
+              console.log(values[0]);
+              pool.query(
+                `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true`,
+                values
+              );
+            } catch (error) {
+              console.error(error);
+            }
+          } else if (reaction.emoji.name === "🚫") {
+            try {
+              const deletedUser = await pool.query(
+                "UPDATE warsignup SET signuplist = signuplist - $1 RETURNING *",
+                [user.id]
+              );
+              console.log(
+                "deleted user from war with family name, ",
+                deletedUser.rows[0]["signupsheet"][user.id]["family_name"]
+              );
+            } catch (error) {
+              console.error(error);
+            }
+          }
+          // update node war signup
+        });
+      }
+    })
+    .catch((err) => console.error(err));
 });
 
 // If you put this in events it won't detect the removal

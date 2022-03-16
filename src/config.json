@@ -1,9 +1,11 @@
 {
+  "ab_min_gear_score": 580,
   "role_az_pending": "933432565132591127",
   "role_ab_pending": "933432565132591128",
   "role_az": "933432565132591130",
   "role_ab": "933432565132591131",
   "role_war_staff": "933432565187100694",
+  "role_pvp_proficient": "933432565073842326",
   "role_admin": "933432565224845314",
   "role_gm_az": "",
   "inGuildOrPending": [
