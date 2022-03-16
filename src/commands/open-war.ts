@@ -61,9 +61,7 @@ export default {
     const nodeWarSignupChan = client.channels.cache.get(
       config.chan_node_war_signup
     ) as TextChannel;
-    nodeWarSignupChan.messages
-      .fetch()
-      .then((messages) => messages.forEach((m) => m.delete()));
+    nodeWarSignupChan.bulkDelete(10);
 
     const exampleEmbed = new MessageEmbed()
       .setColor("#0099ff")
