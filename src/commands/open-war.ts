@@ -72,7 +72,7 @@ export default {
         { name: "Date", value: warDate },
         {
           name: "Instructions",
-          value: "Click the ✅ below to sign up or unsignup from war",
+          value: "Click ✅ to sign up\n Click 🚫 to remove yourself",
         }
       )
       .setTimestamp();
