@@ -18,11 +18,12 @@ import { userMention } from "@discordjs/builders";
 import { getSheetByTitle } from "./utils/getSheetByTitle";
 import pool from "./db/index";
 import dayjs from "dayjs";
+import { updateOrCreateWarSignups } from "./utils/updateOrCreateWarSignups";
 dotenv.config();
 
 console.log("Bot is starting...");
 
-const client = new Client({
+export const client = new Client({
   intents: [
     Intents.FLAGS.GUILD_MEMBERS,
     Intents.FLAGS.GUILDS,
@@ -54,6 +55,7 @@ client.on("ready", async (client) => {
   if (!client.user || !client.application) {
     return;
   }
+  updateOrCreateWarSignups();
   new WOKCommands(client, {
     commandDir: path.join(__dirname, "commands"),
     typeScript: true,
@@ -93,6 +95,9 @@ client.on("ready", async (client) => {
   console.log(`${client.user.username} is ready!`);
   const nodeWarSignupChan = client.channels.cache.get(
     config.chan_node_war_signup
+  ) as TextChannel;
+  const attendanceChannel = client.channels.cache.get(
+    config.chan_attendance_log
   ) as TextChannel;
   nodeWarSignupChan.messages
     .fetch()
@@ -155,6 +160,9 @@ client.on("ready", async (client) => {
                 `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true`,
                 values
               );
+              attendanceChannel.send(
+                `${userMention(user.id)} has signed up for war`
+              );
             } catch (error) {
               console.error(error);
             }
@@ -168,11 +176,13 @@ client.on("ready", async (client) => {
                 "deleted user from war with family name, ",
                 deletedUser.rows[0]["signupsheet"][user.id]["family_name"]
               );
+              attendanceChannel.send(
+                `${userMention(user.id)} has signed out of war`
+              );
             } catch (error) {
               console.error(error);
             }
           }
-          // update node war signup
         });
       }
     })

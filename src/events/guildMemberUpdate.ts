@@ -10,9 +10,10 @@ import { addToSheet } from "../utils/addToSheet";
 import { removeFromSheet } from "../utils/removeFromSheet";
 import { updateSheetFamilyName } from "../utils/updateSheetFamilyName";
 import { sendWelcomeMessage } from "../utils/sendWelcomeMessage";
-
 import utils from "../utils/utils";
 import { getSheetByTitle } from "../utils/getSheetByTitle";
+import pool from "../db/index";
+import { updateOrCreateWarSignups } from "../utils/updateOrCreateWarSignups";
 
 module.exports = {
   name: "guildMemberUpdate",
@@ -81,6 +82,10 @@ module.exports = {
       }
       // END add to dump sheet
       removeFromSheet(oldMember);
+      await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
+        oldMember.id,
+      ]);
+      updateOrCreateWarSignups();
       // TODO: remove from war signup if member is in abyssal
     }
 
@@ -111,6 +116,7 @@ module.exports = {
       Old Nickname: ${oldMember.nickname}
       New Nickname: ${newMember.nickname}
       *Sheet has been updated*\n`);
+
       updateSheetFamilyName(newMember);
     }
   },
