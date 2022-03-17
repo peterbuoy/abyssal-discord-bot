@@ -17,7 +17,7 @@ import { getSheetByTitle } from "./utils/getSheetByTitle";
 import pool from "./db/index";
 import dayjs from "dayjs";
 import { updateOrCreateWarSignups } from "./utils/updateOrCreateWarSignups";
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 console.log("Bot is starting...");
 
@@ -29,12 +29,13 @@ export const client = new Client({
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
   ],
 });
+
 const token = process.env.BOT_TOKEN;
 
 client.login(token);
 
 const eventFiles = fs
-  .readdirSync("./src/events")
+  .readdirSync(path.join(__dirname, "events"))
   .filter((file) => file.endsWith(".ts"));
 
 // dynamically import events from ./src/events
