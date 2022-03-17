@@ -23,7 +23,7 @@ Secrets and tokens will be stored in the `.env` file, which needs to be manually
 # Starting the Bots
 Development: `npm start`
 
-This uses ts-node-dev to start the bot up for production. This is memory intensive so *do not* do this on the production server.
+This uses ts-node-dev to start the bot up for development. This is memory intensive so *do not* do this on the production server.
 
 Production: `npm run compile`
 
