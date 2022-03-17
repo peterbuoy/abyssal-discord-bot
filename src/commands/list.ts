@@ -3,7 +3,6 @@ import { getSheetByTitle } from "../utils/getSheetByTitle";
 import config from "../config.json";
 import { userMention } from "@discordjs/builders";
 import { Collection } from "discord.js";
-import { table } from "console";
 
 export default {
   name: "list",
