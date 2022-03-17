@@ -1,5 +1,5 @@
 # abyssal-discord-bot
-This bot manages the Abyssal / Azurlane guild activities. This bot retains the core functionality KCAZDiscord bot that originally supported the guild.
+This bot manages and automates Abyssal / Azurlane guild activities. This bot retains the core functionality of the KCAZDiscord bot that originally supported the guilds. It is a drop in replacement in terms of user expectations with some additional user experience benefits such as error messages, syntax tips, etc. Also, buttons are cool.
 
 # Dependencies
 - Node.js v17.* or higher
