@@ -36,7 +36,7 @@ client.login(token);
 
 const eventFiles = fs
   .readdirSync(path.join(__dirname, "events"))
-  .filter((file) => file.endsWith(".ts"));
+  .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
 
 // dynamically import events from ./src/events
 (async () => {
@@ -54,10 +54,13 @@ client.on("ready", async (client) => {
   if (!client.user || !client.application) {
     return;
   }
+  console.log(path.join(__dirname, "commands"));
   updateOrCreateWarSignups();
   new WOKCommands(client, {
     commandDir: path.join(__dirname, "commands"),
-    typeScript: true,
+    // this setting is exclusive or
+    // since we want to compile to js and run it we use this to do so
+    typeScript: path.basename(__dirname) === "src" ? true : false,
     defaultLanguage: "english",
     ignoreBots: true,
     ephemeral: true,
