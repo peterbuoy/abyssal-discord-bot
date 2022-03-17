@@ -2,7 +2,7 @@ import pool from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config.json";
 import utils from "../utils/utils";
-import { Collection, MessageEmbed, TextChannel } from "discord.js";
+import { MessageEmbed, TextChannel } from "discord.js";
 import dayjs from "dayjs";
 
 export default {

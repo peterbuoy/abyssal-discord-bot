@@ -1,9 +1,7 @@
 import {
   Client,
-  GuildMember,
   Intents,
   MessageReaction,
-  ReactionEmoji,
   TextChannel,
   User,
 } from "discord.js";
