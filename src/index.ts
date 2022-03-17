@@ -185,6 +185,7 @@ client.on("ready", async (client) => {
               console.error(error);
             }
           }
+          updateOrCreateWarSignups();
         });
       }
     })
