@@ -1,9 +1,11 @@
 {
+  "ab_min_gear_score": 580,
   "role_az_pending": "933432565132591127",
   "role_ab_pending": "933432565132591128",
   "role_az": "933432565132591130",
   "role_ab": "933432565132591131",
   "role_war_staff": "933432565187100694",
+  "role_pvp_proficient": "933432565073842326",
   "role_admin": "933432565224845314",
   "role_gm_az": "",
   "inGuildOrPending": [
@@ -17,6 +19,9 @@
   "chan_gear_requests": "933432566118248492",
   "chan_gear_update": "933432567053565955",
   "chan_bot_spam": "933432567053565958",
+  "chan_war_bot_spam": "933432566118248489",
+  "chan_attendance_log": "933432566118248491",
+  "chan_node_war_signup": "933432567053565956",
   "chan_staff_bot_notif": "933432566118248493",
   "id_guild": "933432564952227880",
   "emoji_abyssal": "933458944217731142",

@@ -77,7 +77,7 @@ export default {
           .remove(allClassIds)
           .then((guildMember) => guildMember.roles.add(classId));
       } catch (err) {
-        console.log(err);
+        console.error("error assigning class role", err);
       }
     }
 
@@ -209,7 +209,7 @@ export default {
                   `\n✅ Approved by ${userMention(
                     reactionUser.id
                   )} at ${updateInfo.get("Gear Timestamp")} PST
-                  )}\n Your new gear info has been updated. 
+                  \n Your new gear info has been updated. 
                 If you are signed up for war, you will need to sign up again for the changes to be reflected.`
               );
             } else if (reaction.emoji.name === "🚫") {

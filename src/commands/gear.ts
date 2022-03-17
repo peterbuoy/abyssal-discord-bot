@@ -1,10 +1,7 @@
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { ICommand } from "wokcommands";
 import config from "../config.json";
-import { MessageEmbed } from "discord.js";
-import { channel } from "diagnostics_channel";
 import { codeBlock } from "@discordjs/builders";
-import { kMaxLength } from "buffer";
 import dayjs from "dayjs";
 
 export default {

@@ -1,11 +1,5 @@
 import { roleMention } from "@discordjs/builders";
-import {
-  ButtonInteraction,
-  Interaction,
-  Message,
-  MessageActionRow,
-  MessageComponentInteraction,
-} from "discord.js";
+import { ButtonInteraction, MessageActionRow } from "discord.js";
 import { ICommand } from "wokcommands";
 import {
   abyssalButton,

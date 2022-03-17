@@ -26,11 +26,13 @@
     "dotenv": "^14.2.0",
     "google-spreadsheet": "^3.2.0",
     "got": "11.8.3",
+    "pg": "^8.7.3",
     "wokcommands": "^1.5.3"
   },
   "devDependencies": {
     "@types/google-spreadsheet": "^3.1.5",
     "@types/node": "^17.0.10",
+    "@types/pg": "^8.6.5",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
     "eslint": "^8.7.0",
