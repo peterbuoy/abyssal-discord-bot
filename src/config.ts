@@ -57,7 +57,7 @@ const dev_config = {
 };
 
 const prod_config = {
-  ab_min_gear_score: 580,
+  ab_min_gear_score: 600,
   role_az_pending: "561261475126312960",
   role_ab_pending: "561260548612685832",
   role_az: "527533557372157991",

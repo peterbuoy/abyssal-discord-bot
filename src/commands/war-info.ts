@@ -37,7 +37,8 @@ export default {
             : "None"
         }\n` +
         `Min GS: ${
-          currentWar.rows[0].min_gs ? currentWar.rows[0].min_gs : "None"
+          config.ab_min_gear_score
+          //currentWar.rows[0].min_gs ? currentWar.rows[0].min_gs : "None"
         }\n` +
         `PVP Prof: ${
           currentWar.rows[0].require_pvp_proficiency
