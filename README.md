@@ -1,9 +1,7 @@
 # abyssal-discord-bot
-This bot manages the Abyssal / Azurlane guild activities. This bot is meant to replace the KCAZDiscord bot that originally supported the guild.
+This bot manages and automates Abyssal / Azurlane guild activities. This bot retains the core functionality of the KCAZDiscord bot that originally supported the guilds. It is a drop in replacement in terms of user expectations with some additional user experience benefits such as error messages, syntax tips, etc. Also, buttons are cool.
 
 # Dependencies
-- Discord.js v13.*
-- dotenv 14.*
 - Node.js v17.* or higher
 - npm v7.21.1 or higher
 
@@ -20,10 +18,13 @@ Installing the [Prettier extension](https://marketplace.visualstudio.com/items?i
 Prettier formatting will override any eslint warnings with the current configuration.
 
 # Setup
-Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. Depending on the implementation of authorization, certain secret values will also be stored in a file likely called 'credentials.json'.
+Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. The `config.json` file contains constants such as user, role, channel, and client IDs. There will likely be two configuration files with one being for the test server and the other being for the live server.
 
 # Starting the Bots
 Development: `npm start`
 
+This uses ts-node-dev to start the bot up for development. This is memory intensive so *do not* do this on the production server.
+
 Production: `npm run compile`
-This creates a `dist` directory containing the compiled js files. Run the `index.js` file in there for better performance.
+
+This creates a `dist` directory containing the compiled js files. Run the `index.js` file in there to save memory.
