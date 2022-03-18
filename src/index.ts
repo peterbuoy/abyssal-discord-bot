@@ -167,7 +167,7 @@ client.on("ready", async (client) => {
               ];
               // this query only successfuly updates if the id is not already a top-level key in the jsonb file, the ? operator
               const updateQuery = await pool.query(
-                `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true AND signuplist::jsonb ? $2 = false RETURNING signuplist`,
+                `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true AND signuplist ? $2 = false RETURNING signuplist`,
                 values
               );
               if (updateQuery.rowCount === 1) {
@@ -181,16 +181,15 @@ client.on("ready", async (client) => {
           } else if (reaction.emoji.name === "🚫") {
             try {
               const deletedUser = await pool.query(
-                "UPDATE warsignup SET signuplist = signuplist - $1 RETURNING *",
+                "UPDATE warsignup SET signuplist = signuplist - $1 WHERE signuplist ? $1 = true RETURNING signuplist",
                 [user.id]
               );
-              console.log(
-                "deleted user from war with family name, ",
-                deletedUser.rows[0]["signupsheet"][user.id]["family_name"]
-              );
-              attendanceChannel.send(
-                `${userMention(user.id)} has signed out of war`
-              );
+              console.log(deletedUser.rowCount);
+              if (deletedUser.rowCount === 1) {
+                attendanceChannel.send(
+                  `${userMention(user.id)} has signed out of war`
+                );
+              }
             } catch (error) {
               console.error(error);
             }
