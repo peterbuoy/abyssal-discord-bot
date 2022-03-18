@@ -28,7 +28,8 @@ module.exports = {
       (!oldMember.roles.cache.has(config.role_az) &&
         newMember.roles.cache.has(config.role_az))
     ) {
-      addToSheet(newMember);
+      await removeFromSheet(newMember);
+      await addToSheet(newMember);
       sendWelcomeMessage(newMember, config.chan_bot_spam);
     }
 
