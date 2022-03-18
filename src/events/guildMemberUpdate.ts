@@ -1,9 +1,4 @@
-import {
-  Collection,
-  GuildMember,
-  PartialGuildMember,
-  TextChannel,
-} from "discord.js";
+import { GuildMember, PartialGuildMember, TextChannel } from "discord.js";
 import { userMention } from "@discordjs/builders";
 import config from "../config.json";
 import { addToSheet } from "../utils/addToSheet";
@@ -11,9 +6,9 @@ import { removeFromSheet } from "../utils/removeFromSheet";
 import { updateSheetFamilyName } from "../utils/updateSheetFamilyName";
 import { sendWelcomeMessage } from "../utils/sendWelcomeMessage";
 import utils from "../utils/utils";
-import { getSheetByTitle } from "../utils/getSheetByTitle";
 import pool from "../db/index";
 import { updateOrCreateWarSignups } from "../utils/updateOrCreateWarSignups";
+import { addToDumpSheet } from "../utils/addToDumpSheet";
 
 module.exports = {
   name: "guildMemberUpdate",
@@ -44,49 +39,12 @@ module.exports = {
       (oldMember.roles.cache.has(config.role_az) &&
         !newMember.roles.cache.has(config.role_az))
     ) {
-      // START: Add to dump sheet
-      let sheetTitle = "";
-      let dumpSheetTitle = "";
-      if (oldMember?.roles.cache.has(config.role_ab)) {
-        sheetTitle = config.ab_sheet_title;
-        dumpSheetTitle = config.ab_dump_sheet_title;
-      } else if (oldMember?.roles.cache.has(config.role_az)) {
-        sheetTitle = config.az_sheet_title;
-        dumpSheetTitle = config.az_dump_sheet_title;
-      } else {
-        throw Error("Member does not have a valid role");
-      }
-      // This functionality to add member info to the dumpsheet is pulled from
-      // the update command. Consider writing a function?
-      const sheet = await getSheetByTitle(sheetTitle);
-      const rows = await sheet?.getRows();
-      const targetRow = rows?.find(
-        (row) => row["Discord UserID"] === oldMember.user.id
-      );
-      const dumpSheet = await getSheetByTitle(dumpSheetTitle);
-      // Move current info to Dump Sheet
-      if (targetRow !== undefined) {
-        await dumpSheet?.addRow({
-          "Discord UserID": targetRow["Discord UserID"],
-          "Family Name": targetRow["Family Name"],
-          "Character Name": targetRow["Character Name"],
-          Class: targetRow["Class"],
-          Level: targetRow["Level"],
-          "Gear Score": targetRow["Gear Score"],
-          AP: targetRow["AP"],
-          "Awaken AP": targetRow["Awaken AP"],
-          DP: targetRow["DP"],
-          "Gear Screenshot": targetRow["Gear Screenshot"],
-          "Join Date": targetRow["Join Date"],
-        });
-      }
-      // END add to dump sheet
+      addToDumpSheet(oldMember);
       removeFromSheet(oldMember);
       await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
         oldMember.id,
       ]);
       updateOrCreateWarSignups();
-      // TODO: remove from war signup if member is in abyssal
     }
 
     // Name check
