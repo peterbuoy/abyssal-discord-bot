@@ -1,11 +1,10 @@
 import { GuildMember, TextChannel } from "discord.js";
-import { getSheetByTitle } from "../utils/getSheetByTitle";
 import config from "../config.json";
 import { removeFromSheet } from "../utils/removeFromSheet";
 import { updateOrCreateWarSignups } from "../utils/updateOrCreateWarSignups";
 import pool from "../db/index";
 import { userMention } from "@discordjs/builders";
-import { addToDumpSheet } from "src/utils/addToDumpSheet";
+import { addToDumpSheet } from "../utils/addToDumpSheet";
 
 module.exports = {
   name: "guildMemberRemove",
