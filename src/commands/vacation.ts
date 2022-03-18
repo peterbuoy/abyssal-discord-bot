@@ -7,12 +7,13 @@ export default {
   description: "adds a reason for a leave of absence (vacation)",
   slash: false,
   cooldown: "30s",
-  callback: async ({ member, channel, args }) => {
+  callback: async ({ member, channel, args, message }) => {
     // only allow cmd to be used by ab az guild memebers in contact an officer chan
     if (
       member.roles.cache.hasAny(config.role_ab, config.role_az) ||
       channel.id !== config.chan_contact_an_officer
     ) {
+      message.reply("You can only use this in the contact an officer channel.");
       return;
     }
     let sheetTitle = "";

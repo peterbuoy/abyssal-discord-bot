@@ -21,6 +21,7 @@ export default {
       message.channelId !== config.chan_gear_update ||
       !member.roles.cache.hasAny(config.role_az, config.role_ab)
     ) {
+      message.reply("You can only use this in the gear update channel.");
       return;
     }
 

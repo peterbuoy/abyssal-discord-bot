@@ -32,6 +32,7 @@ export default {
       ) ||
       channel.id !== config.chan_welcome
     ) {
+      message.reply("You can only use this in the welcome channel.");
       return;
     }
 

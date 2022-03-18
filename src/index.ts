@@ -54,7 +54,7 @@ client.on("ready", async (client) => {
   if (!client.user || !client.application) {
     return;
   }
-  console.log(path.join(__dirname, "commands"));
+
   updateOrCreateWarSignups();
   new WOKCommands(client, {
     commandDir: path.join(__dirname, "commands"),
@@ -66,6 +66,13 @@ client.on("ready", async (client) => {
     ephemeral: true,
     botOwners: config.id_peterbuoy,
     testServers: [config.id_guild],
+    disabledDefaultCommands: [
+      "help",
+      "command",
+      "language",
+      "prefix",
+      "required-role",
+    ],
   }).setDefaultPrefix("%");
   try {
     const guild = await client.guilds.fetch(config.id_guild);

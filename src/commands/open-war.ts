@@ -24,6 +24,7 @@ export default {
       channel.id !== config.chan_war_bot_spam ||
       !message.member?.roles.cache.has(config.role_war_staff)
     ) {
+      message.reply("You can only use this in the warbot-spam channel.");
       return;
     }
     const warName = args[0].split("_").join(" ");

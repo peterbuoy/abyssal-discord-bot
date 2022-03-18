@@ -14,13 +14,15 @@ export default {
   testOnly: true,
   minArgs: 0,
   maxArgs: 8,
-  cooldown: "10s",
+  cooldown: "5s",
+  syntax: "update Character YourName Class Warrior lvl 63 300/300/300",
   callback: async ({ member, message, args, channel }) => {
     // Only allow usage in #gear-update and by az/ab members
     if (
       channel.id !== config.chan_gear_update ||
       !member.roles.cache.hasAny(config.role_ab, config.role_az)
     ) {
+      message.reply("You can only use this in the gear update channel.");
       return;
     }
 

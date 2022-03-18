@@ -15,7 +15,15 @@ export default {
   maxArgs: 1,
   syntax: "change-war-date",
   cooldown: "5s",
-  callback: async ({ client, member, message, args }) => {
+  callback: async ({ client, member, message, args, channel }) => {
+    if (
+      !member.roles.cache.has(config.role_war_staff) ||
+      channel.id !== config.chan_war_bot_spam
+    ) {
+      message.reply("You can only use this in the warbot-spam channel.");
+      return;
+    }
+
     const date = dayjs(args[0]).format("MM/DD/YYYY");
     const currentWar = await pool.query(
       "UPDATE warsignup SET date_of_war = $1 WHERE is_active = true RETURNING *",
