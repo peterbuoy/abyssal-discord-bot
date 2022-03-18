@@ -18,13 +18,17 @@ Installing the [Prettier extension](https://marketplace.visualstudio.com/items?i
 Prettier formatting will override any eslint warnings with the current configuration.
 
 # Setup
-Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. The `config.json` file contains constants such as user, role, channel, and client IDs. There will likely be two configuration files with one being for the test server and the other being for the live server.
+Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. The `config.ts` file contains constants such as user, role, channel, and client IDs. This file uses process.env.NODE_ENV (set to dev or test) to determine whether to use the development or production configuration files. For example, if you wanted to use the development configuration you could do `NODE_ENV=dev npx ts-node-dev src/index.ts`.
 
 # Starting the Bots
-Development: `npm start`
+Live Development: `npm run dev`
 
-This uses ts-node-dev to start the bot up for development. This is memory intensive so *do not* do this on the production server.
+This uses ts-node-dev to start the bot up for development and sets process.env.NODE_ENV to dev. This is memory intensive so *do not* do this on the production server.
 
-Production: `npm run compile`
+Deploy Development: `npm deploy:dev`
+This creates a `dist` directory containing the compiled js files. Then it runs the `index.js` file using the **development** (testing) configuration file.
+This should be rarely used after the new bot officially replaces the existing bots. This is used for extended end to end testing.
 
-This creates a `dist` directory containing the compiled js files. Run the `index.js` file in there to save memory.
+Production: `npm deploy:prod`
+
+This creates a `dist` directory containing the compiled js files. Then it runs the `index.js` file using the **production** configuration file.
