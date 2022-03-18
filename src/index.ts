@@ -15,8 +15,13 @@ import utils from "./utils/utils";
 import { userMention } from "@discordjs/builders";
 import { getSheetByTitle } from "./utils/getSheetByTitle";
 import pool from "./db/index";
-import dayjs from "dayjs";
 import { updateOrCreateWarSignups } from "./utils/updateOrCreateWarSignups";
+import dayjs from "dayjs";
+import tz from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+dayjs.extend(tz);
+
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 console.log("Bot is starting...");
@@ -160,7 +165,9 @@ client.on("ready", async (client) => {
                     class: userInfo["Class"] ? userInfo["Class"] : "none",
                     lvl: userInfo["Level"] ? userInfo["Level"] : 0,
                     gs: userInfo["Gear Score"] ? userInfo["Gear Score"] : 0,
-                    timestamp: dayjs().format("ddd, h:hh A"),
+                    timestamp: dayjs()
+                      .tz("America/Los_Angeles")
+                      .format("ddd, h:mm A"),
                   },
                 }),
                 user.id,
