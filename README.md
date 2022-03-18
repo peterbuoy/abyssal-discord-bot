@@ -18,7 +18,7 @@ Installing the [Prettier extension](https://marketplace.visualstudio.com/items?i
 Prettier formatting will override any eslint warnings with the current configuration.
 
 # Setup
-Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. The `config.json` file contains constants such as user, role, channel, and client IDs. There will likely be two configuration files with one being for the test server and the other being for the live server.
+Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. The `config.json` file contains constants such as user, role, channel, and client IDs. There is one configuration file that dynamically determines whether the development or production values are used based off of process.env.NODE_ENV(can be "dev" or "prod"). For example, if you wanted to use the development configuration you could do `NODE_ENV=dev ts-node-dev index.ts`
 
 # Starting the Bots
 Live Development: `npm start`
