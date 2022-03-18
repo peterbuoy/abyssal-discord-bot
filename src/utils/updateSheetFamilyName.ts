@@ -1,7 +1,7 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
 import { getSheetByTitle } from "./getSheetByTitle";
 import util from "../utils/utils";
-import config from "../config.json";
+import config from "../config";
 
 const updateSheetFamilyName = async (
   newMember: GuildMember | PartialGuildMember

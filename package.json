@@ -4,10 +4,12 @@
   "description": "discord bot that manages guild activities for Abyssal and Azurlane",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev src/index.ts",
+    "dev": "NODE_ENV=dev ts-node-dev src/index.ts",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "compile": "tsc",
-    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "deploy:dev": "npm run compile && NODE_ENV=dev node dist/index.js",
+    "deploy:prod": "npm run compile && NODE_ENV=prod node dist/index.js"
   },
   "repository": {
     "type": "git",

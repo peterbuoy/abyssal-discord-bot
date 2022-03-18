@@ -2,7 +2,7 @@ import { Collection, MessageReaction, TextChannel, User } from "discord.js";
 import dayjs from "dayjs";
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { ICommand } from "wokcommands";
-import config from "../config.json";
+import config from "../config";
 import { userMention } from "@discordjs/builders";
 import { addToDumpSheet } from "../utils/addToDumpSheet";
 

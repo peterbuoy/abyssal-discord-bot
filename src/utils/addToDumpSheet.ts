@@ -1,6 +1,6 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
 import { getSheetByTitle } from "./getSheetByTitle";
-import config from "../config.json";
+import config from "../config";
 
 const addToDumpSheet = async (member: GuildMember | PartialGuildMember) => {
   let sheetTitle = "";

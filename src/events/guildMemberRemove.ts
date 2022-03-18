@@ -1,5 +1,5 @@
 import { GuildMember, TextChannel } from "discord.js";
-import config from "../config.json";
+import config from "../config";
 import { removeFromSheet } from "../utils/removeFromSheet";
 import { updateOrCreateWarSignups } from "../utils/updateOrCreateWarSignups";
 import pool from "../db/index";

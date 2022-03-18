@@ -1,6 +1,6 @@
 import pool from "../db/index";
 import { ICommand } from "wokcommands";
-import config from "../config.json";
+import config from "../config";
 import dayjs from "dayjs";
 
 export default {

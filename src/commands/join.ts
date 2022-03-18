@@ -7,7 +7,7 @@ import {
   yesAZRulesButton,
   noAZRulesButton,
 } from "../buttons/joinButtons";
-import config from "../config.json";
+import config from "../config";
 import got from "got";
 
 export default {

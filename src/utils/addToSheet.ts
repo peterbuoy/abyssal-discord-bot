@@ -1,7 +1,7 @@
 import { GuildMember } from "discord.js";
 import { getSheetByTitle } from "./getSheetByTitle";
 import utils from "../utils/utils";
-import config from "../config.json";
+import config from "../config";
 import dayjs from "dayjs";
 
 const addToSheet = async (newMember: GuildMember) => {

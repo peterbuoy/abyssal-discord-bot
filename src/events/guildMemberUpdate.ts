@@ -1,6 +1,6 @@
 import { GuildMember, PartialGuildMember, TextChannel } from "discord.js";
 import { userMention } from "@discordjs/builders";
-import config from "../config.json";
+import config from "../config";
 import { addToSheet } from "../utils/addToSheet";
 import { removeFromSheet } from "../utils/removeFromSheet";
 import { updateSheetFamilyName } from "../utils/updateSheetFamilyName";

@@ -1,4 +1,4 @@
-import config from "../config.json";
+import config from "../config";
 import { Collection, TextChannel } from "discord.js";
 import { client } from "../index";
 import pool from "../db/index";

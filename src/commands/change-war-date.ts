@@ -1,6 +1,6 @@
 import pool from "../db/index";
 import { ICommand } from "wokcommands";
-import config from "../config.json";
+import config from "../config";
 import utils from "../utils/utils";
 import { MessageEmbed, TextChannel } from "discord.js";
 import dayjs from "dayjs";

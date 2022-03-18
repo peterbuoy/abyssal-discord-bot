@@ -1,6 +1,6 @@
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { ICommand } from "wokcommands";
-import config from "../config.json";
+import config from "../config";
 
 export default {
   category: "Testing",

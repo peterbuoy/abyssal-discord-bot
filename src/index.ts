@@ -9,7 +9,7 @@ import fs from "fs";
 import path from "path";
 import WOKCommands from "wokcommands";
 import dotenv from "dotenv";
-import config from "./config.json";
+import config from "./config";
 import { removeFromSheet } from "./utils/removeFromSheet";
 import utils from "./utils/utils";
 import { userMention } from "@discordjs/builders";
