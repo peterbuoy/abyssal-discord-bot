@@ -21,10 +21,14 @@ Prettier formatting will override any eslint warnings with the current configura
 Secrets and tokens will be stored in the `.env` file, which needs to be manually populated on the instance. The `config.json` file contains constants such as user, role, channel, and client IDs. There will likely be two configuration files with one being for the test server and the other being for the live server.
 
 # Starting the Bots
-Development: `npm start`
+Live Development: `npm start`
 
 This uses ts-node-dev to start the bot up for development. This is memory intensive so *do not* do this on the production server.
 
-Production: `npm run compile`
+Deploy Development: `npm deploy:dev`
+This creates a `dist` directory containing the compiled js files. Then it runs the `index.js` using the **development** (testing) configuration file.
+This should be rarely used after the bot is officially replaces the existing bots.
 
-This creates a `dist` directory containing the compiled js files. Run the `index.js` file in there to save memory.
+Production: `npm deploy:prod`
+
+This creates a `dist` directory containing the compiled js files. Then it runs the `index.js` using the **production** configuration file.
