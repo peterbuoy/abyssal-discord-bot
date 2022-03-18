@@ -163,15 +163,18 @@ client.on("ready", async (client) => {
                     timestamp: dayjs().format("ddd, h:hh A"),
                   },
                 }),
+                user.id,
               ];
-              console.log(values[0]);
-              pool.query(
-                `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true`,
+              // this query only successfuly updates if the id is not already a top-level key in the jsonb file, the ? operator
+              const updateQuery = await pool.query(
+                `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true AND signuplist::jsonb ? $2 = false RETURNING signuplist`,
                 values
               );
-              attendanceChannel.send(
-                `${userMention(user.id)} has signed up for war`
-              );
+              if (updateQuery.rowCount === 1) {
+                attendanceChannel.send(
+                  `${userMention(user.id)} has signed up for war`
+                );
+              }
             } catch (error) {
               console.error(error);
             }
