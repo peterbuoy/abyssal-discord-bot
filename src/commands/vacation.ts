@@ -4,7 +4,8 @@ import config from "../config";
 
 export default {
   category: "Management",
-  description: "adds a reason for a leave of absence (vacation)",
+  description:
+    "Adds a reason for a leave of absence (vacation). Just type your message after the command.",
   slash: false,
   testOnly: false,
   cooldown: "30s",

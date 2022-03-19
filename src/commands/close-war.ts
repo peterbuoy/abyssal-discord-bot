@@ -7,7 +7,7 @@ import { TextChannel } from "discord.js";
 export default {
   name: "close-war",
   category: "War",
-  description: "closes currently active war",
+  description: "Closes currently active war",
   slash: false,
   testOnly: false,
   minArgs: 0,

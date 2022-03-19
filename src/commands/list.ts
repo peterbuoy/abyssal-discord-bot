@@ -7,7 +7,7 @@ import { Collection } from "discord.js";
 export default {
   name: "list",
   category: "Management",
-  description: "Lists all members in guild based on argument",
+  description: "Lists all members in guild based on arguments: kc, ab, or az",
   slash: false,
   testOnly: false,
   minArgs: 1,

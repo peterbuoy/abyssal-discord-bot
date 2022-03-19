@@ -9,13 +9,15 @@ import { addToDumpSheet } from "../utils/addToDumpSheet";
 export default {
   name: "update",
   category: "Gear",
-  description: "starts character, gear update request process",
+  description:
+    "Starts gear update request process. Remember to attach an image. You can choose to update parts of your character. e.g. %update 300/300/300 is valid",
   slash: false,
   testOnly: false,
   minArgs: 0,
   maxArgs: 8,
   cooldown: "5s",
-  syntax: "update Character YourName Class Warrior lvl 63 300/300/300",
+  expectedArgs: "Character characterName Class className lvl 12 345/678/901",
+  syntax: "update Character NoHands Class Warrior lvl 63 300/300/300",
   callback: async ({ member, message, args, channel }) => {
     // Only allow usage in #gear-update and by az/ab members
     if (

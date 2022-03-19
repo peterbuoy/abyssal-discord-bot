@@ -6,13 +6,15 @@ import { Embed } from "@discordjs/builders";
 export default {
   name: "info",
   category: "Gear",
-  description: "displays the gear info of the member",
+  description:
+    "displays the gear info of the member and takes a mention as an optional argument",
   slash: false,
   testOnly: false,
   minArgs: 0,
   maxArgs: 1,
   cooldown: "10s",
-  syntax: "gear",
+  expectedArgs: "[mention]",
+  syntax: "info [mention]",
   callback: async ({ message, member, channel }) => {
     // Channel and guild member check
     if (

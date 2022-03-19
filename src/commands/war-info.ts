@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 export default {
   name: "war-info",
   category: "War",
-  description: "gets info regarding war settings",
+  description: "Gets info regarding war settings",
   slash: false,
   testOnly: false,
   minArgs: 0,

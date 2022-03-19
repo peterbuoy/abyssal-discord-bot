@@ -9,7 +9,7 @@ import { codeBlock } from "@discordjs/builders";
 export default {
   name: "open-war",
   category: "War",
-  description: "Opens war signup sheet",
+  description: "Opens war signup sheet in #node-war-signup",
   slash: false,
   testOnly: false,
   minArgs: 2,

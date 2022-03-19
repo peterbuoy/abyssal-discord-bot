@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 export default {
   name: "change-war-date",
   category: "War",
-  description: "closes war signup sheet",
+  description: "Closes war signup sheet",
   slash: false,
   testOnly: false,
   minArgs: 1,
