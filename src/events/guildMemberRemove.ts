@@ -1,4 +1,4 @@
-import { GuildMember, TextChannel } from "discord.js";
+import { GuildMember, Role, TextChannel } from "discord.js";
 import config from "../config";
 import { removeFromSheet } from "../utils/removeFromSheet";
 import { updateOrCreateWarSignups } from "../utils/updateOrCreateWarSignups";
@@ -9,7 +9,9 @@ import { addToDumpSheet } from "../utils/addToDumpSheet";
 module.exports = {
   name: "guildMemberRemove",
   async execute(member: GuildMember) {
-    if (!member.roles.cache.hasAny(config.role_ab, config.role_az)) return;
+    if (!member.roles.cache.hasAny(config.role_ab, config.role_az)) {
+      return;
+    }
     await addToDumpSheet(member);
     await removeFromSheet(member);
     const staffBotNotifChannel = member.guild.channels.cache.get(
@@ -20,9 +22,11 @@ module.exports = {
         member.roles.cache.has(config.role_az) ? "Azurlane" : "Abyssal"
       }`
     );
-    await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
-      member.id,
-    ]);
-    updateOrCreateWarSignups();
+    if (member.roles.cache.has(config.role_ab)) {
+      await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
+        member.id,
+      ]);
+      updateOrCreateWarSignups();
+    }
   },
 };

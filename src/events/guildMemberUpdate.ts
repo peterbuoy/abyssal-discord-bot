@@ -42,10 +42,12 @@ module.exports = {
     ) {
       addToDumpSheet(oldMember);
       removeFromSheet(oldMember);
-      await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
-        oldMember.id,
-      ]);
-      updateOrCreateWarSignups();
+      if (oldMember.roles.cache.has(config.role_ab)) {
+        await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
+          oldMember.id,
+        ]);
+        updateOrCreateWarSignups();
+      }
     }
 
     // Name check
