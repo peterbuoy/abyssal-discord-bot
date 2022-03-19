@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 export default {
   name: "gear",
   category: "Testing",
-  description: "Lists all members in guild based on argument",
+  description: "Lists all gear of guild members based on argument",
   slash: false,
   testOnly: true,
   minArgs: 1,

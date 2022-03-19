@@ -13,7 +13,7 @@ export default {
   minArgs: 1,
   maxArgs: 1,
   expectedArgs: "<guild>",
-  syntax: "list <guild> (optional: <sheet>)",
+  syntax: "list <guild>",
   cooldown: "10s",
   callback: async ({ message, args }) => {
     if (
