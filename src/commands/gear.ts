@@ -6,10 +6,10 @@ import dayjs from "dayjs";
 
 export default {
   name: "gear",
-  category: "Testing",
+  category: "Gear",
   description: "Lists all gear of guild members based on argument",
   slash: false,
-  testOnly: true,
+  testOnly: false,
   minArgs: 1,
   maxArgs: 1,
   cooldown: "10s",

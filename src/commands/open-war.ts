@@ -8,10 +8,10 @@ import { codeBlock } from "@discordjs/builders";
 
 export default {
   name: "open-war",
-  category: "Testing",
+  category: "War",
   description: "Opens war signup sheet",
   slash: false,
-  testOnly: true,
+  testOnly: false,
   minArgs: 2,
   maxArgs: 2,
   expectedArgs: "<War_Name> <MM/DD/YYYY>",

@@ -6,10 +6,10 @@ import { Collection } from "discord.js";
 
 export default {
   name: "list",
-  category: "Testing",
+  category: "Management",
   description: "Lists all members in guild based on argument",
   slash: false,
-  testOnly: true,
+  testOnly: false,
   minArgs: 1,
   maxArgs: 1,
   expectedArgs: "<guild>",

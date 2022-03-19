@@ -5,10 +5,10 @@ import dayjs from "dayjs";
 
 export default {
   name: "war-info",
-  category: "Testing",
+  category: "War",
   description: "gets info regarding war settings",
   slash: false,
-  testOnly: true,
+  testOnly: false,
   minArgs: 0,
   maxArgs: 0,
   syntax: "war-info",

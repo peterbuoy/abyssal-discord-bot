@@ -3,9 +3,10 @@ import { ICommand } from "wokcommands";
 import config from "../config";
 
 export default {
-  category: "Testing",
+  category: "Management",
   description: "adds a reason for a leave of absence (vacation)",
   slash: false,
+  testOnly: false,
   cooldown: "30s",
   callback: async ({ member, channel, args, message }) => {
     // only allow cmd to be used by ab az guild memebers in contact an officer chan

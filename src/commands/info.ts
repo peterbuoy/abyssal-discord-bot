@@ -5,10 +5,10 @@ import { Embed } from "@discordjs/builders";
 
 export default {
   name: "info",
-  category: "Testing",
+  category: "Gear",
   description: "displays the gear info of the member",
   slash: false,
-  testOnly: true,
+  testOnly: false,
   minArgs: 0,
   maxArgs: 1,
   cooldown: "10s",

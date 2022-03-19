@@ -12,11 +12,11 @@ import got from "got";
 
 export default {
   name: "join",
-  category: "Testing",
+  category: "Management",
   description: "Starts process of joining guild",
 
   slash: false,
-  testOnly: true, // Only register a slash command for the testing guilds
+  testOnly: false,
   expectedArgs: "",
   minArgs: 0,
   maxArgs: 0,

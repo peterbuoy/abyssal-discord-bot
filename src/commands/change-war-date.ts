@@ -7,10 +7,10 @@ import dayjs from "dayjs";
 
 export default {
   name: "change-war-date",
-  category: "Testing",
+  category: "War",
   description: "closes war signup sheet",
   slash: false,
-  testOnly: true,
+  testOnly: false,
   minArgs: 1,
   maxArgs: 1,
   syntax: "change-war-date",

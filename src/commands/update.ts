@@ -8,10 +8,10 @@ import { addToDumpSheet } from "../utils/addToDumpSheet";
 
 export default {
   name: "update",
-  category: "Testing",
+  category: "Gear",
   description: "starts character, gear update request process",
   slash: false,
-  testOnly: true,
+  testOnly: false,
   minArgs: 0,
   maxArgs: 8,
   cooldown: "5s",
