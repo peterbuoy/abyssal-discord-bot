@@ -24,7 +24,8 @@ export default {
       "SELECT * FROM warsignup WHERE is_active = true LIMIT 1"
     );
     if (currentWar.rowCount === 0) {
-      return message.reply("There is no war in Ba Sing Se!");
+      message.reply("There is no war in Ba Sing Se!");
+      return;
     }
     message.reply(
       `Name: ${currentWar.rows[0].name}\n` +

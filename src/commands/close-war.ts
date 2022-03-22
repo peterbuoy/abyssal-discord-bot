@@ -27,7 +27,8 @@ export default {
       "UPDATE warsignup SET is_active = false WHERE is_active = true RETURNING name, date_of_war"
     );
     if (currentWar.rowCount !== 1) {
-      return message.reply("There is no war to close!");
+      message.reply("There is no war to close!");
+      return;
     }
 
     message.reply(
