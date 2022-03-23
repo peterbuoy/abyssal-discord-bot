@@ -53,7 +53,13 @@ module.exports = {
     // Name check
     if (
       oldMember.nickname !== newMember.nickname &&
-      !utils.isNameValid(newMember.nickname!)
+      !utils.isNameValid(newMember.nickname!) &&
+      newMember.roles.cache.hasAny(
+        config.role_ab,
+        config.role_ab_pending,
+        config.role_az,
+        config.role_ab_pending
+      )
     ) {
       staffBotNotifChannel.send(
         `⚠️ Invalid Name Change
