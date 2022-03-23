@@ -179,7 +179,7 @@ client.on("ready", async (client) => {
               );
               if (updateQuery.rowCount === 1) {
                 attendanceChannel.send(
-                  `${userMention(user.id)} has signed up for war`
+                  `✅ ${userMention(user.id)} has signed up for war`
                 );
               }
             } catch (error) {
@@ -194,7 +194,7 @@ client.on("ready", async (client) => {
               console.log(deletedUser.rowCount);
               if (deletedUser.rowCount === 1) {
                 attendanceChannel.send(
-                  `${userMention(user.id)} has signed out of war`
+                  `🚫 ${userMention(user.id)} has signed out of war`
                 );
               }
             } catch (error) {
