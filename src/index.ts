@@ -105,7 +105,6 @@ client.on("ready", async (client) => {
   } catch (error) {
     console.error(error);
   }
-
   console.log(`${client.user.username} is ready!`);
   const nodeWarSignupChan = client.channels.cache.get(
     config.chan_node_war_signup
@@ -203,6 +202,8 @@ client.on("ready", async (client) => {
           }
           updateOrCreateWarSignups();
         });
+      } else {
+        throw Error("Unable to find embed message in node war signup channel.");
       }
     })
     .catch((err) => console.error(err));
