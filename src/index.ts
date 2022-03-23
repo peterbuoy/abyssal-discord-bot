@@ -19,6 +19,7 @@ import { updateOrCreateWarSignups } from "./utils/updateOrCreateWarSignups";
 import dayjs from "dayjs";
 import tz from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { addToDumpSheet } from "./utils/addToDumpSheet";
 dayjs.extend(utc);
 dayjs.extend(tz);
 
@@ -210,19 +211,27 @@ client.on("ready", async (client) => {
 });
 
 // If you put this in events it won't detect the removal
-client.on("guildMemberRemove", (member) => {
-  console.log("guild member removed");
+client.on("guildMemberRemove", async (member) => {
+  if (!member.roles.cache.hasAny(config.role_ab, config.role_az)) {
+    return;
+  }
+  await addToDumpSheet(member);
+  await removeFromSheet(member);
   const staffBotNotifChannel = member.guild.channels.cache.get(
     config.chan_staff_bot_notif
   ) as TextChannel;
-  if (member.roles.cache.hasAny(config.role_ab, config.role_az)) {
-    console.log("role detected for member that left");
-    removeFromSheet(member);
-    staffBotNotifChannel.send(
-      `Family Name: ${utils.parseFamilyName(
-        member.displayName
-      )} has left the server. Please kick them in game`
-    );
+  staffBotNotifChannel.send(
+    `${userMention(member.id)}, family name \`${utils.parseFamilyName(
+      member.displayName
+    )}\` has left the server. Please kick from ${
+      member.roles.cache.has(config.role_az) ? "Azurlane" : "Abyssal"
+    }`
+  );
+  if (member.roles.cache.has(config.role_ab)) {
+    await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
+      member.id,
+    ]);
+    updateOrCreateWarSignups();
   }
 });
 
