@@ -32,15 +32,22 @@ const updateOrCreateWarSignups = async () => {
   const lvl = "Lvl".padEnd(4, " ");
   const gs = "GS".padEnd(5, " ");
   let formattedMessage = `${familyName}${characterName}${className}${lvl}${gs}Time (PT)\n`;
-  signUpList.forEach((noob) => {
-    formattedMessage += `${noob.family_name.padEnd(
-      17,
-      " "
-    )}${noob.character_name.padEnd(17, " ")}${noob.class.padEnd(
-      12,
-      " "
-    )}${noob.lvl.padEnd(4, " ")}${noob.gs.padEnd(5, " ")}${noob.timestamp}\n`;
-  });
+  try {
+    signUpList.forEach((noob) => {
+      formattedMessage += `${noob.family_name.padEnd(
+        17,
+        " "
+      )}${noob.character_name.toString().padEnd(17, " ")}${noob.class
+        .toString()
+        .padEnd(12, " ")}${noob.lvl.toString().padEnd(4, " ")}${noob.gs.padEnd(
+        5,
+        " "
+      )}${noob.timestamp}\n`;
+    });
+  } catch (error) {
+    console.error(error);
+  }
+
   warSignupListMessage?.edit(codeBlock(formattedMessage));
 };
 
