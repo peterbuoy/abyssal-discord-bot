@@ -164,7 +164,7 @@ export default {
                 "Gear Timestamp",
                 dayjs().format("M/D/YYYY h:mm A")
               );
-              gearRequestMsg.delete();
+              await gearRequestMsg.delete();
               let sheetTitle = "";
               if (member?.roles.cache.has(config.role_ab)) {
                 sheetTitle = config.ab_sheet_title;
@@ -186,7 +186,7 @@ export default {
                 await targetRow.save();
               }
 
-              gearUpdateMsg.edit(
+              await gearUpdateMsg.edit(
                 `**__Update Requested by__** ${message.author}\n` +
                   `*Please note that your update is now pending review by War Staff.
           Until it is approved, you will **not** see any changes reflected*\n` +
@@ -198,8 +198,8 @@ export default {
                 If you are signed up for war, you will need to sign up again for the changes to be reflected.`
               );
             } else if (reaction.emoji.name === "🚫") {
-              gearRequestMsg.delete();
-              gearUpdateMsg.edit(
+              await gearRequestMsg.delete();
+              await gearUpdateMsg.edit(
                 `**__Update Requested by__** ${message.author}\n` +
                   `*Please note that your update is now pending review by War Staff. Until it is approved, you will **not** see any changes reflected*\n` +
                   msg +
