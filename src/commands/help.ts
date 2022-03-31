@@ -7,7 +7,7 @@ export default {
   description: "displays all available commands",
   callback: ({ member, channel, instance }) => {
     let helpMessage =
-      "**Angle brackets are <REQUIRED> arguments\n Square brackets are [OPTIONAL] arguments**\n";
+      "**Angle brackets indicate <REQUIRED> arguments\n Square brackets indicate [OPTIONAL] arguments**\n";
     instance.commandHandler.commands.forEach((command: ICommand) => {
       // All commands except config shown for admin, war staff, gm az
       if (
