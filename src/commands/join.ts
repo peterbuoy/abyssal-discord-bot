@@ -12,8 +12,8 @@ import got from "got";
 
 export default {
   name: "join",
-  category: "Management",
-  description: "Starts process of joining guild",
+  category: "Join",
+  description: `Starts process of joining either guild. Only works in <#${config.chan_welcome}>`,
 
   slash: false,
   testOnly: false,

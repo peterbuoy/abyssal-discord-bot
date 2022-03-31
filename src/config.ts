@@ -12,7 +12,7 @@ const dev_config = {
   role_war_staff: "933432565187100694",
   role_pvp_proficient: "933432565073842326",
   role_admin: "933432565224845314",
-  role_gm_az: "",
+  role_gm_az: "566025773727744021",
   chan_welcome: "933432565224845317",
   chan_contact_an_officer: "933432567053565953",
   chan_gear_requests: "933432566118248492",
