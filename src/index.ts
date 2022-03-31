@@ -80,6 +80,8 @@ client.on("ready", async (client) => {
       "required-role",
     ],
   }).setDefaultPrefix("%");
+
+  // Check for valid names on startup
   try {
     const guild = await client.guilds.fetch(config.id_guild);
     const staffNotificationChannel = (await guild.channels.fetch(
@@ -107,6 +109,8 @@ client.on("ready", async (client) => {
     console.error(error);
   }
   console.log(`${client.user.username} is ready!`);
+
+  // Emoji collector for embed in node-war-signup
   const nodeWarSignupChan = client.channels.cache.get(
     config.chan_node_war_signup
   ) as TextChannel;

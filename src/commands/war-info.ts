@@ -2,6 +2,7 @@ import pool from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config";
 import dayjs from "dayjs";
+import { userMention } from "@discordjs/builders";
 
 export default {
   name: "war-info",
@@ -17,15 +18,22 @@ export default {
       channel.id !== config.chan_war_bot_spam ||
       !message.member?.roles.cache.has(config.role_war_staff)
     ) {
-      message.reply("You can only use this in the warbot-spam channel.");
+      message.reply("Only warstaff can use this in #warbot-spam.");
       return;
     }
     const currentWar = await pool.query(
-      "SELECT * FROM warsignup WHERE is_active = true LIMIT 1"
+      "SELECT * FROM warsignup WHERE is_active = true LIMIT 2"
     );
     if (currentWar.rowCount === 0) {
       message.reply("There is no war in Ba Sing Se!");
       return;
+    } else if (currentWar.rowCount > 1) {
+      message.reply(
+        `${userMention(config.id_peterbuoy)} Time to check the war database.`
+      );
+      throw Error(
+        "There is more than one active war in the database. Something has gone terribly wrong and you're entirely at fault LMAO!"
+      );
     }
     message.reply(
       `Name: ${currentWar.rows[0].name}\n` +

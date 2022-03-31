@@ -34,9 +34,9 @@ export default {
       config.chan_attendance_log
     ) as TextChannel;
     attendanceChannel.send(
-      `🎉 The event ${
+      `🎉 The event **${
         currentWar.rows[0].name
-      } has had its date changed to ${date} by <${utils.parseFamilyName(
+      }** has had its date changed to ${date} by <${utils.parseFamilyName(
         member.displayName
       )}>🎉 `
     );
@@ -54,7 +54,7 @@ export default {
         },
         {
           name: "Instructions",
-          value: "Click the 🅱️ below to sign up or unsignup from war",
+          value: "✅ Signup ||  🚫 Sign out",
         }
       );
       embedMessage?.edit({ embeds: [newEmbed] });

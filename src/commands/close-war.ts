@@ -20,7 +20,7 @@ export default {
       channel.id !== config.chan_war_bot_spam ||
       !message.member?.roles.cache.has(config.role_war_staff)
     ) {
-      message.reply("You can only use this in the warbot-spam channel.");
+      message.reply("Only warstaff can use this in the #warbot-spam.");
       return;
     }
     const currentWar = await pool.query(
