@@ -304,6 +304,7 @@ function parseClassName(className: string) {
   else if (className == "sage") className = "Sage";
   else if (className == "corsair" || className == "courser")
     className = "Corsair";
+  else if (className == "drakania") className = "Drakania";
   else className = "INVALID";
 
   return className;
