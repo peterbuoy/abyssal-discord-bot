@@ -19,7 +19,7 @@ const updateOrCreateWarSignups = async () => {
   const signUpListQuery = await pool.query(
     "SELECT signuplist FROM warsignup WHERE is_active = true LIMIT 1"
   );
-  if (signUpListQuery.rows[0] === 0) {
+  if (signUpListQuery.rowCount === 0) {
     console.log("No active war signup list found.");
     return;
   }
