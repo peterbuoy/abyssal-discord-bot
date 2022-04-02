@@ -162,7 +162,7 @@ export default {
               updateInfo.set("Awaken AP Gained", null);
               updateInfo.set(
                 "Gear Timestamp",
-                dayjs().tz("America/Los_Angeles").format("M/D/YYYY h:mm A")
+                dayjs().tz("America/Los_Angeles").format("MM/DD/YYYY h:mm A")
               );
               await gearRequestMsg.delete();
               let sheetTitle = "";
@@ -199,17 +199,13 @@ export default {
               );
             } else if (reaction.emoji.name === "🚫") {
               await gearRequestMsg.delete();
-              updateInfo.set(
-                "Gear Timestamp",
-                dayjs().tz("America/Los_Angeles").format("M/D/YYYY h:mm A")
-              );
               await gearUpdateMsg.edit(
                 `**__Update Requested by__** ${message.author}\n` +
                   `*Please note that your update is now pending review by War Staff. Until it is approved, you will **not** see any changes reflected*\n` +
                   msg +
-                  `\n🚫 Denied by ${userMention(
-                    reactionUser.id
-                  )} at ${updateInfo.get("Gear Timestamp")} PST`
+                  `\n🚫 Denied by ${userMention(reactionUser.id)} at ${dayjs()
+                    .tz("America/Los_Angeles")
+                    .format("MM/DD/YYYY h:mm A")} PST`
               );
               channel.send({
                 content:
