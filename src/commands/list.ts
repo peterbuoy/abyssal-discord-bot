@@ -15,13 +15,14 @@ export default {
   expectedArgs: "<guild>",
   syntax: "list <guild>",
   cooldown: "10s",
-  callback: async ({ message, args }) => {
+  callback: async ({ message, args, channel }) => {
     if (
       !message.member?.roles.cache.hasAny(
         config.role_war_staff,
         config.role_gm_az,
         config.role_admin
-      )
+      ) ||
+      channel.id == config.chan_gear_update
     ) {
       return;
     }
