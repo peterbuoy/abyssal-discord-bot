@@ -162,7 +162,7 @@ export default {
               updateInfo.set("Awaken AP Gained", null);
               updateInfo.set(
                 "Gear Timestamp",
-                dayjs().format("M/D/YYYY h:mm A")
+                dayjs().tz("America/Los_Angeles").format("M/D/YYYY h:mm A")
               );
               await gearRequestMsg.delete();
               let sheetTitle = "";
