@@ -199,6 +199,10 @@ export default {
               );
             } else if (reaction.emoji.name === "🚫") {
               await gearRequestMsg.delete();
+              updateInfo.set(
+                "Gear Timestamp",
+                dayjs().tz("America/Los_Angeles").format("M/D/YYYY h:mm A")
+              );
               await gearUpdateMsg.edit(
                 `**__Update Requested by__** ${message.author}\n` +
                   `*Please note that your update is now pending review by War Staff. Until it is approved, you will **not** see any changes reflected*\n` +
