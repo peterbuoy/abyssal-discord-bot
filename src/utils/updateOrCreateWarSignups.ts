@@ -20,6 +20,10 @@ const updateOrCreateWarSignups = async () => {
     "SELECT signuplist FROM warsignup WHERE is_active = true LIMIT 1"
   );
   const signUpListJSON = signUpListQuery.rows[0].signuplist;
+  if (signUpListJSON === undefined) {
+    console.log("handling undefined signUpList JSONB data bye bye");
+    return;
+  }
   const signUpList: Collection<string, any> = new Collection(
     Object.entries(signUpListJSON)
   );
