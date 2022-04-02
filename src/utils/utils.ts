@@ -1,5 +1,5 @@
 const isNameValid = (name: string): boolean => {
-  const regex = /<([A-Z,a-z,0-9,_]{3,16})>$/;
+  const regex = /<([A-Z,a-z,0-9,_]{3,16})>/;
   return regex.test(name);
 };
 
