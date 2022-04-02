@@ -41,8 +41,8 @@ export default {
     if (!utils.isNameValid(member.nickname as string)) {
       //
       message.reply(`Please confirm that your name is formatted correctly:
-      just put your family name in angle brackets: <YourFamilyNameHere>
-      Then try again in 60 seconds.`);
+just put your family name in angle brackets: <YourFamilyNameHere>
+Then try again in 60 seconds.`);
       return;
     }
 

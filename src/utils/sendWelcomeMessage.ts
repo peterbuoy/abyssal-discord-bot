@@ -16,7 +16,7 @@ const sendWelcomeMessage = async (
       "------------------------------------------\n" +
       "All of our <#412900828328886273> and <#415340796561195008> are available for you to use. A quick peek over in <#711175769077841990> won't hurt either. If you have any questions, please ask in <#688929102572421351>! We are more than happy to assist you! \n" +
       "------------------------------------------\n" +
-      "If you haven't already done so, change your Chat Tab #1 to Guild Chat and set name to Family Names.\n\n" +
+      "If you haven't already done so, configure your Chat Tab #1 to show Guild Chat __**and**__ Alliance Chat, and set display names to Family Names.\n\n" +
       "1. Press CTRL and hover over your chatbox (Default bottom left)\n" +
       "2. Click on the cog icon on the top of your chat box\n" +
       "3. Disable Server/World/whatever else you do not want to see\n" +
