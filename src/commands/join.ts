@@ -9,6 +9,7 @@ import {
 } from "../buttons/joinButtons";
 import config from "../config";
 import got from "got";
+import utils from "../utils/utils";
 
 export default {
   name: "join",
@@ -36,6 +37,12 @@ export default {
         "This command is only available to guildless members in #welcome."
       );
       return;
+    }
+    if (utils.isNameValid(member.displayName)) {
+      //
+      message.reply(`Please confirm that your name is formatted correctly:
+      just put your family name in angle brackets: <YourFamilyNameHere>
+      Then try again in 60 seconds.`);
     }
 
     const replyContent =
