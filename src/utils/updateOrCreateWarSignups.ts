@@ -36,7 +36,9 @@ const updateOrCreateWarSignups = async () => {
   const className = "Class".padEnd(12, " ");
   const lvl = "Lvl".padEnd(4, " ");
   const gs = "GS".padEnd(5, " ");
-  let formattedMessage = `${familyName}${characterName}${className}${lvl}${gs}Time (PT)\n`;
+  let formattedMessage = `Signups: ${signUpList.size}\n\n${familyName}${characterName}${className}${lvl}${gs}Time (PT)\n`;
+  formattedMessage +=
+    "------------------------------------------------------------------\n";
   try {
     signUpList.forEach((noob) => {
       formattedMessage += `${noob.family_name.padEnd(
