@@ -21,9 +21,12 @@ export default {
         config.role_war_staff,
         config.role_gm_az,
         config.role_admin
-      ) ||
-      channel.id == config.chan_gear_update
+      )
     ) {
+      if (channel.id == config.chan_gear_update)
+        message.reply(
+          "You might be looking for the %gear command to print everyone's gear. You can do `%gear ab` or `%gear az`."
+        );
       return;
     }
     let sheetName = "";
