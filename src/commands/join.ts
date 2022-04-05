@@ -71,7 +71,7 @@ Then try again in 60 seconds.`);
           .then((response) => response.body.slice(9, -1))
           .then((kanyeQuote) => {
             i.reply({
-              content: `Your button press is irrelevant like this quote from Kanye West:\n *${kanyeQuote}*`,
+              content: `Your button press is irrelevant like this quote from Ye West, formerly known as Kanye West:\n *${kanyeQuote}*`,
               ephemeral: true,
             });
           });
