@@ -16,6 +16,10 @@ export default {
   syntax: "list <guild>",
   cooldown: "10s",
   callback: async ({ message, args, channel }) => {
+    if (channel.id === config.chan_gear_update) {
+      message.reply("You can not use this command in #gear-update.");
+      return;
+    }
     if (
       !message.member?.roles.cache.hasAny(
         config.role_war_staff,
@@ -23,10 +27,6 @@ export default {
         config.role_admin
       )
     ) {
-      if (channel.id == config.chan_gear_update)
-        message.reply(
-          "You might be looking for the %gear command to print everyone's gear. You can do `%gear ab` or `%gear az`."
-        );
       return;
     }
     let sheetName = "";
@@ -70,6 +70,14 @@ export default {
       }
     });
     message.channel.send(memberListMessage);
+  },
+  error: ({ message }) => {
+    if (message.channel.id === config.chan_gear_update) {
+      message.reply(
+        "You might be looking for the %gear command to print everyone's gear. You can do `%gear ab` or `%gear az`."
+      );
+      return;
+    }
   },
 } as ICommand;
 
