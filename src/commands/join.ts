@@ -80,11 +80,11 @@ Then try again in 60 seconds.`);
         switch (i.customId) {
           case "abyssal":
             member?.roles.add(config.role_ab_pending);
-            reply.edit({
+            reply.delete();
+            channel.send({
               content: `You have been tagged as a pending **<Abyssal>** member! A member of ${roleMention(
                 config.role_war_staff
               )} will get to you shortly to verify your gear and administer a PvP test.`,
-              components: [],
             });
             break;
           case "azurlane":
@@ -99,14 +99,14 @@ Then try again in 60 seconds.`);
             break;
           case "yesAZRules":
             member?.roles.add(config.role_az_pending);
-            reply.edit({
-              content: `Congratulations on completing the application process! You have been tagged as a pending **<AzurLane>** member! The ${roleMention(
+            reply.delete();
+            channel.send({
+              content: `Congratulations on completing the application process! You have been tagged as a pending **<AzurLane>** member! The <@&${
                 config.role_gm_az
-              )} will get to you shortly. If you don't get a ping within 5 minutes, it means that no one is currently available to invite right now. Feel free to ping ${roleMention(
+              }> will get to you shortly. If you don't get a ping within 5 minutes, it means that they are not currently available to invite right now. Feel free to ping ${roleMention(
                 config.role_gm_az
-              )} in a few hours to see if we are around!
+              )} in a few hours to see if they are around!
               **Please note that your pending tag will be automatically removed in 72 hours. You will have to reapply if you do not get invited within that time**`,
-              components: [],
             });
             break;
           case "noAZRules":
@@ -121,7 +121,7 @@ Then try again in 60 seconds.`);
 
     // Remove buttons and edit message after 59 seconds if they don't interact
     collector.on("end", () => {
-      if (reply.components.length !== 0) {
+      if (reply.components.length !== 0 && reply.deletable) {
         reply.edit({
           content:
             "No guild or answer was selected in time. Join process has ended.",
