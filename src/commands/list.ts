@@ -1,4 +1,4 @@
-import { ICommand } from "wokcommands";
+import { CommandErrors, ICommand } from "wokcommands";
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import config from "../config";
 import { userMention } from "@discordjs/builders";
@@ -10,14 +10,16 @@ export default {
   description: "Lists all members in guild based on arguments: kc, ab, or az",
   slash: false,
   testOnly: false,
-  minArgs: 1,
+  minArgs: 0,
   maxArgs: 1,
   expectedArgs: "<guild>",
   syntax: "list <guild>",
   cooldown: "10s",
   callback: async ({ message, args, channel }) => {
     if (channel.id === config.chan_gear_update) {
-      message.reply("You can not use this command in #gear-update.");
+      message.reply(
+        "You can not use this management command in #gear-update. \nUse %gear to list the gear of members.\n e.g. `%gear ab` or `%gear az`"
+      );
       return;
     }
     if (
@@ -70,14 +72,6 @@ export default {
       }
     });
     message.channel.send(memberListMessage);
-  },
-  error: ({ message }) => {
-    if (message.channel.id === config.chan_gear_update) {
-      message.reply(
-        "You might be looking for the %gear command to print everyone's gear. You can do `%gear ab` or `%gear az`."
-      );
-      return;
-    }
   },
 } as ICommand;
 
