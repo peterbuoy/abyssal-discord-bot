@@ -3,6 +3,10 @@ This bot manages and automates Abyssal / Azurlane guild activities. This bot ret
 
 **The wiki has more specific information if you're interested.**
 
+The bot has two environments that share the same repo. You should develop locally (test environment) and when ready deploy to production. Please don't test in production.
+
+![diagram of bot infrastructure](https://i.imgur.com/GSG9S5V.png)
+
 # Dependencies
 - Node.js v17.* or higher
 - npm v7.21.1 or higher
