@@ -224,10 +224,11 @@ client.on("guildMemberRemove", async (member) => {
   const staffBotNotifChannel = member.guild.channels.cache.get(
     config.chan_staff_bot_notif
   ) as TextChannel;
-  staffBotNotifChannel.send(
-    `${userMention(member.id)}, family name \`${utils.parseFamilyName(
-      member.displayName
-    )}\` has left the server. Please kick from ${
+  const familyName = utils.parseFamilyName(member.displayName);
+  await staffBotNotifChannel.send(
+    `${userMention(
+      member.id
+    )}, family name \`${familyName}\` has left the server. Please kick from ${
       member.roles.cache.has(config.role_az) ? "Azurlane" : "Abyssal"
     }`
   );
