@@ -2,11 +2,10 @@ import dayjs from "dayjs";
 import pool from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config";
-import { MessageEmbed, MessageReaction, TextChannel, User } from "discord.js";
+import { MessageEmbed, TextChannel } from "discord.js";
 import utils from "../utils/utils";
-import { codeBlock, userMention } from "@discordjs/builders";
-import { getSheetByTitle } from "../utils/getSheetByTitle";
-import { updateOrCreateWarSignups } from "../utils/updateOrCreateWarSignups";
+import { codeBlock } from "@discordjs/builders";
+import { createWarSignUpCollector } from "../collectors/createWarSignUpCollector";
 
 export default {
   name: "open-war",
@@ -20,7 +19,6 @@ export default {
   syntax: "open-war <War_Name> <Date MM/DD/YYYY>",
   cooldown: "5s",
   callback: async ({ client, member, message, channel, args }) => {
-    // Nice to have: await user confirmation that this command will overwrite the active war
     // Only allow in #warbot-spam and only usable by war staff
     if (
       channel.id !== config.chan_war_bot_spam ||
@@ -64,6 +62,7 @@ export default {
     const nodeWarSignupChan = client.channels.cache.get(
       config.chan_node_war_signup
     ) as TextChannel;
+    // This fetches UP to x amount of messages and deletes them via bulk delete discord api call
     await nodeWarSignupChan.bulkDelete(10);
 
     const exampleEmbed = new MessageEmbed()
@@ -80,17 +79,21 @@ export default {
     // You must await this or the emoji collector will be created before the embed
     await nodeWarSignupChan
       .send({ embeds: [exampleEmbed] })
-      .then((msg) => {
-        msg.react("✅");
-        msg.react("🚫");
-      })
-      .then((msg) => {
-        console.log(msg);
-      })
+      .then((msg) =>
+        Promise.all([
+          msg.react("✅"),
+          msg.react("🚫"),
+          pool.query(
+            `UPDATE warsignup SET embed_msg_id = $1 WHERE is_active = true`,
+            [msg.id]
+          ),
+          createWarSignUpCollector(client, msg.id),
+        ])
+      )
       .catch((err) => console.error(err));
     // An emoji collector will be created when the bot is started in the "ready" event
 
-    const attendanceChannel = client.channels.cache.get(
+    /* const attendanceChannel = client.channels.cache.get(
       config.chan_attendance_log
     ) as TextChannel;
     nodeWarSignupChan.messages
@@ -189,8 +192,8 @@ export default {
           );
         }
       })
-      .catch((err) => console.error(err));
-    // This is NOT ideal but if the bot is reset the ✅ collector must start again somehow
+      .catch((err) => console.error(err)); */
+
     const familyName = "Family Name".padEnd(17, " ");
     const characterName = "Character Name".padEnd(17, " ");
     const className = "Class".padEnd(12, " ");
@@ -198,10 +201,14 @@ export default {
     const gs = "GS".padEnd(5, " ");
     const pvp = "PVP".padEnd(4, " ");
     const time = "Time (PT)";
-    nodeWarSignupChan.send(
+    const listMessage = await nodeWarSignupChan.send(
       codeBlock(
         `${familyName}${characterName}${className}${lvl}${gs}${pvp}${time}`
       )
+    );
+    await pool.query(
+      `UPDATE warsignup SET list_msg_id = $1 WHERE is_active = true`,
+      [listMessage.id]
     );
   },
 } as ICommand;

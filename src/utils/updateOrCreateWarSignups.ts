@@ -8,11 +8,11 @@ const updateOrCreateWarSignups = async () => {
   const nodeWarSignupChan = client.channels.cache.get(
     config.chan_node_war_signup
   ) as TextChannel;
-  const messages = await nodeWarSignupChan.messages.fetch();
-  const warSignupListMessage = messages.find(
-    (message) => message.embeds.length === 0
-  );
-  if (warSignupListMessage === undefined) {
+  const listMessageID = await pool
+    .query(`SELECT list_msg_id FROM warsignup WHERE is_active = true`)
+    .then((res) => res.rows[0].list_msg_id);
+  const listMessage = await nodeWarSignupChan.messages.fetch(listMessageID);
+  if (listMessage === undefined) {
     console.log("No war signup list message found.");
     return;
   }
@@ -29,7 +29,7 @@ const updateOrCreateWarSignups = async () => {
     Object.entries(signUpListJSON)
   );
   // gs is technically string
-  // This is like buying a helmet and not strapping it once
+  // This is like buying a helmet and not strapping it on
   signUpList.sort((a, b) => parseInt(b.gs) - parseInt(a.gs));
   const familyName = "Family Name".padEnd(17, " ");
   const characterName = "Character Name".padEnd(17, " ");
@@ -55,7 +55,7 @@ const updateOrCreateWarSignups = async () => {
     console.error(error);
   }
 
-  warSignupListMessage?.edit(codeBlock(formattedMessage));
+  await listMessage.edit(codeBlock(formattedMessage));
 };
 
 export { updateOrCreateWarSignups };
