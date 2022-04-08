@@ -20,7 +20,6 @@ export default {
   syntax: "open-war <War_Name> <Date MM/DD/YYYY>",
   cooldown: "5s",
   callback: async ({ client, member, message, channel, args }) => {
-    // Nice to have: await user confirmation that this command will overwrite the active war
     // Only allow in #warbot-spam and only usable by war staff
     if (
       channel.id !== config.chan_war_bot_spam ||
@@ -64,6 +63,7 @@ export default {
     const nodeWarSignupChan = client.channels.cache.get(
       config.chan_node_war_signup
     ) as TextChannel;
+    // This fetches UP to x amount of messages and deletes them via bulk delete discord api call
     await nodeWarSignupChan.bulkDelete(10);
 
     const exampleEmbed = new MessageEmbed()
@@ -83,6 +83,10 @@ export default {
       .then((msg) => {
         msg.react("✅");
         msg.react("🚫");
+        pool.query(
+          `UPDATE warsignup SET embed_msg_id = $1 WHERE is_active = true`,
+          [msg.id]
+        );
       })
       .then((msg) => {
         console.log(msg);
@@ -190,7 +194,7 @@ export default {
         }
       })
       .catch((err) => console.error(err));
-    // This is NOT ideal but if the bot is reset the ✅ collector must start again somehow
+
     const familyName = "Family Name".padEnd(17, " ");
     const characterName = "Character Name".padEnd(17, " ");
     const className = "Class".padEnd(12, " ");
@@ -198,10 +202,14 @@ export default {
     const gs = "GS".padEnd(5, " ");
     const pvp = "PVP".padEnd(4, " ");
     const time = "Time (PT)";
-    nodeWarSignupChan.send(
+    const listMessage = await nodeWarSignupChan.send(
       codeBlock(
         `${familyName}${characterName}${className}${lvl}${gs}${pvp}${time}`
       )
+    );
+    await pool.query(
+      `UPDATE warsignup SET list_msg_id = $1 WHERE is_active = true`,
+      [listMessage.id]
     );
   },
 } as ICommand;
