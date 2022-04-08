@@ -2,11 +2,10 @@ import dayjs from "dayjs";
 import pool from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config";
-import { MessageEmbed, MessageReaction, TextChannel, User } from "discord.js";
+import { MessageEmbed, TextChannel } from "discord.js";
 import utils from "../utils/utils";
-import { codeBlock, userMention } from "@discordjs/builders";
-import { getSheetByTitle } from "../utils/getSheetByTitle";
-import { updateOrCreateWarSignups } from "../utils/updateOrCreateWarSignups";
+import { codeBlock } from "@discordjs/builders";
+import { createWarSignUpCollector } from "../collectors/createWarSignUpCollector";
 
 export default {
   name: "open-war",
@@ -80,21 +79,21 @@ export default {
     // You must await this or the emoji collector will be created before the embed
     await nodeWarSignupChan
       .send({ embeds: [exampleEmbed] })
-      .then((msg) => {
-        msg.react("✅");
-        msg.react("🚫");
-        pool.query(
-          `UPDATE warsignup SET embed_msg_id = $1 WHERE is_active = true`,
-          [msg.id]
-        );
-      })
-      .then((msg) => {
-        console.log(msg);
-      })
+      .then((msg) =>
+        Promise.all([
+          msg.react("✅"),
+          msg.react("🚫"),
+          pool.query(
+            `UPDATE warsignup SET embed_msg_id = $1 WHERE is_active = true`,
+            [msg.id]
+          ),
+          createWarSignUpCollector(client, msg.id),
+        ])
+      )
       .catch((err) => console.error(err));
     // An emoji collector will be created when the bot is started in the "ready" event
 
-    const attendanceChannel = client.channels.cache.get(
+    /* const attendanceChannel = client.channels.cache.get(
       config.chan_attendance_log
     ) as TextChannel;
     nodeWarSignupChan.messages
@@ -193,7 +192,7 @@ export default {
           );
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err)); */
 
     const familyName = "Family Name".padEnd(17, " ");
     const characterName = "Character Name".padEnd(17, " ");
