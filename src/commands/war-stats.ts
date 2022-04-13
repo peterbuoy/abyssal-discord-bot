@@ -35,7 +35,7 @@ export default {
     }
 
     const queryResult = await pool.query(
-      "SELECT name, signuplist, date_of_war FROM warsignup WHERE date_of_war > CURRENT_DATE - INTERVAL '7 days' ORDER BY date_of_war ASC"
+      "SELECT name, signuplist, date_of_war FROM warsignup WHERE date_of_war > CURRENT_DATE - INTERVAL '30 days' ORDER BY date_of_war ASC"
     );
     const rows = queryResult.rows;
     // <Discord userID, [attendanceCount, mostRecentWarDate]
