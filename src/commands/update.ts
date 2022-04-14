@@ -178,13 +178,21 @@ export default {
               const targetRow = rows?.find(
                 (row) => row["Discord UserID"] === member.user.id
               );
-              if (targetRow !== undefined) {
-                await addToDumpSheet(member);
-                updateInfo.forEach((value, columnName) => {
-                  targetRow[columnName] = value;
-                });
-                await targetRow.save();
+              if (targetRow == undefined) {
+                channel.send(
+                  `${userMention(
+                    config.id_peterbuoy
+                  )} Error in updating gear. Please check the logs. `
+                );
+                throw Error(
+                  `Abyssal member ${member.displayName} tried to do a gear update but they were unable to be found in the google spreadsheet.`
+                );
               }
+              await addToDumpSheet(member);
+              updateInfo.forEach((value, columnName) => {
+                targetRow[columnName] = value;
+              });
+              await targetRow.save();
 
               await gearUpdateMsg.edit(
                 `**__Update Requested by__** ${message.author}\n` +
