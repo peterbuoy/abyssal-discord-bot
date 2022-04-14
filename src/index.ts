@@ -14,6 +14,11 @@ import tz from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { addToDumpSheet } from "./utils/addToDumpSheet";
 import { createWarSignUpCollector } from "./collectors/createWarSignUpCollector";
+import { getSheetByTitle } from "./utils/getSheetByTitle";
+import { addToSheet } from "./utils/addToSheet";
+import { sendWelcomeMessage } from "./utils/sendWelcomeMessage";
+import { updateSheetFamilyName } from "./utils/updateSheetFamilyName";
+import { channel } from "diagnostics_channel";
 dayjs.extend(utc);
 dayjs.extend(tz);
 
@@ -34,7 +39,8 @@ const token = process.env.BOT_TOKEN;
 
 client.login(token);
 
-const eventFiles = fs
+// All event files were moved to index.ts so the event loader has been commented out
+/* const eventFiles = fs
   .readdirSync(path.join(__dirname, "events"))
   .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
 
@@ -48,7 +54,7 @@ const eventFiles = fs
       client.on(event.name, (...args) => event.execute(...args));
     }
   }
-})();
+})(); */
 
 client.on("ready", async (client) => {
   if (!client.user || !client.application) {
@@ -106,6 +112,81 @@ client.on("ready", async (client) => {
   createWarSignUpCollector(client);
 });
 
+client.on("guildMemberUpdate", async (oldMember, newMember) => {
+  const userID = oldMember.id;
+  const staffBotNotifChannel = newMember.guild.channels.cache.get(
+    config.chan_staff_bot_notif
+  ) as TextChannel;
+
+  // User joining guild
+  if (
+    (!oldMember.roles.cache.has(config.role_ab) &&
+      newMember.roles.cache.has(config.role_ab)) ||
+    (!oldMember.roles.cache.has(config.role_az) &&
+      newMember.roles.cache.has(config.role_az))
+  ) {
+    await removeFromSheet(newMember);
+    await addToSheet(newMember);
+    setTimeout(setAbyssalMemberCountAsActivity, 3 * 1000, client);
+    sendWelcomeMessage(newMember, config.chan_bot_spam);
+  }
+
+  // User leaving guild
+  if (
+    (oldMember.roles.cache.has(config.role_ab) &&
+      !newMember.roles.cache.has(config.role_ab)) ||
+    (oldMember.roles.cache.has(config.role_az) &&
+      !newMember.roles.cache.has(config.role_az))
+  ) {
+    addToDumpSheet(oldMember);
+    removeFromSheet(oldMember);
+    if (oldMember.roles.cache.has(config.role_ab)) {
+      await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
+        oldMember.id,
+      ]);
+      setTimeout(setAbyssalMemberCountAsActivity, 3 * 1000, client);
+      updateOrCreateWarSignups();
+    }
+  }
+
+  // Name check
+  if (
+    oldMember.nickname !== newMember.nickname &&
+    !utils.isNameValid(newMember.nickname!) &&
+    newMember.roles.cache.hasAny(
+      config.role_ab,
+      config.role_ab_pending,
+      config.role_az,
+      config.role_ab_pending
+    )
+  ) {
+    staffBotNotifChannel.send(
+      `⚠️ Invalid Name Change
+        User Profile: ${userMention(userID)}
+        Old Nickname: ${oldMember.nickname}
+        New Nickname: ${newMember.nickname}\n`
+    );
+  } else if (
+    oldMember.nickname !== newMember.nickname &&
+    utils.isNameValid(newMember.nickname!) &&
+    newMember.roles.cache.hasAny(
+      config.role_ab,
+      config.role_ab_pending,
+      config.role_az,
+      config.role_ab_pending
+    )
+  ) {
+    staffBotNotifChannel.send(`
+      ☑️ Valid Name Change
+      User Profile: ${userMention(userID)}
+      Old Nickname: ${oldMember.nickname}
+      New Nickname: ${newMember.nickname}
+      *Sheet has been updated*\n`);
+
+    updateSheetFamilyName(newMember);
+  }
+});
+
 // If you put this in events it won't detect the removal
 client.on("guildMemberRemove", async (member) => {
   if (!member.roles.cache.hasAny(config.role_ab, config.role_az)) {
@@ -129,8 +210,25 @@ client.on("guildMemberRemove", async (member) => {
       member.id,
     ]);
     updateOrCreateWarSignups();
+    setTimeout(setAbyssalMemberCountAsActivity, 3 * 1000, client);
   }
 });
 
 client.on("warn", console.warn);
 client.on("error", console.error);
+
+const setAbyssalMemberCountAsActivity = async (client: Client) => {
+  console.log("getting abyssal member count");
+  const abSheet = await getSheetByTitle(config.ab_sheet_title);
+  const rows = await abSheet?.getRows();
+  let abMemberCount = 0;
+  rows?.forEach((row) => {
+    if (row["Discord UserID"] !== undefined) {
+      abMemberCount += 1;
+    }
+  });
+  console.log(abMemberCount);
+  client.user?.setActivity(`${abMemberCount} members`, { type: "PLAYING" });
+};
+
+setInterval(setAbyssalMemberCountAsActivity, 3600 * 1000, client);
