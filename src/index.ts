@@ -18,7 +18,6 @@ import { getSheetByTitle } from "./utils/getSheetByTitle";
 import { addToSheet } from "./utils/addToSheet";
 import { sendWelcomeMessage } from "./utils/sendWelcomeMessage";
 import { updateSheetFamilyName } from "./utils/updateSheetFamilyName";
-import { channel } from "diagnostics_channel";
 dayjs.extend(utc);
 dayjs.extend(tz);
 
@@ -60,7 +59,7 @@ client.on("ready", async (client) => {
   if (!client.user || !client.application) {
     return;
   }
-
+  setAbyssalMemberCountAsActivity(client);
   updateOrCreateWarSignups();
   new WOKCommands(client, {
     commandDir: path.join(__dirname, "commands"),
