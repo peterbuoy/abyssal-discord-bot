@@ -10,6 +10,7 @@ import {
 import config from "../config";
 import got from "got";
 import utils from "../utils/utils";
+import pool from "../db/index";
 
 export default {
   name: "join",
@@ -66,7 +67,7 @@ Then try again in 60 seconds.`);
       time: 59 * 1000,
     });
 
-    collector.on("collect", (i: ButtonInteraction) => {
+    collector.on("collect", async (i: ButtonInteraction) => {
       if (i.user.id !== message.author.id) {
         got("https://api.kanye.rest/")
           .then((response) => response.body.slice(9, -1))
@@ -99,16 +100,24 @@ Then try again in 60 seconds.`);
             });
             break;
           case "yesAZRules":
-            member?.roles.add(config.role_az_pending);
-            reply.delete();
-            channel.send({
-              content: `Congratulations on completing the application process! You have been tagged as a pending **<AzurLane>** member! The <@&${
-                config.role_gm_az
-              }> will get to you shortly. If you don't get a ping within 5 minutes, it means that they are not currently available to invite right now. Feel free to ping ${roleMention(
-                config.role_gm_az
-              )} in a few hours to see if they are around!
+            try {
+              member?.roles.add(config.role_az_pending);
+              reply.delete();
+              channel.send({
+                content: `Congratulations on completing the application process! You have been tagged as a pending **<AzurLane>** member! The <@&${
+                  config.role_gm_az
+                }> will get to you shortly. If you don't get a ping within 5 minutes, it means that they are not currently available to invite right now. Feel free to ping ${roleMention(
+                  config.role_gm_az
+                )} in a few hours to see if they are around!
               **Please note that your pending tag will be automatically removed in 72 hours. You will have to reapply if you do not get invited within that time**`,
-            });
+              });
+              await pool.query(
+                "INSERT INTO pending_az(discord_user_id) VALUES ($1) ON CONFLICT (discord_user_id) DO UPDATE SET conferment_timestamp = current_timestamp",
+                [member.id]
+              );
+            } catch (error) {
+              console.error(error);
+            }
             break;
           case "noAZRules":
             reply.edit({
