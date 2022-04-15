@@ -10,14 +10,15 @@ export default {
   name: "update",
   category: "Gear",
   description:
-    "Starts gear update request process. Remember to attach an image.",
+    "Starts gear update request process. Remember to attach an image.\n *Example:* %update Character Gaisgeil Class Ninja level 62 123/456/789",
   slash: false,
   testOnly: false,
   minArgs: 0,
   maxArgs: 8,
   cooldown: "5s",
-  expectedArgs: "Character characterName Class className lvl 12 345/678/901",
-  syntax: "update Character NoHands Class Warrior lvl 63 300/300/300",
+  expectedArgs:
+    "Character character_name Class class_name level your_level AP/awakening_ap/DP",
+  syntax: "update Character NoHands Class Warrior level 63 300/300/300",
   callback: async ({ member, message, args, channel }) => {
     // Only allow usage in #gear-update and by az/ab members
     if (
