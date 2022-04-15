@@ -18,6 +18,7 @@ import { getSheetByTitle } from "./utils/getSheetByTitle";
 import { addToSheet } from "./utils/addToSheet";
 import { sendWelcomeMessage } from "./utils/sendWelcomeMessage";
 import { updateSheetFamilyName } from "./utils/updateSheetFamilyName";
+import { channel } from "diagnostics_channel";
 dayjs.extend(utc);
 dayjs.extend(tz);
 
@@ -60,6 +61,8 @@ client.on("ready", async (client) => {
     return;
   }
   setAbyssalMemberCountAsActivity(client);
+  purgeAzPending(client);
+
   updateOrCreateWarSignups();
   new WOKCommands(client, {
     commandDir: path.join(__dirname, "commands"),
@@ -230,4 +233,21 @@ const setAbyssalMemberCountAsActivity = async (client: Client) => {
   client.user?.setActivity(`${abMemberCount} members`, { type: "PLAYING" });
 };
 
+// If people get tagged as az_pending via join you need to add people to the az_pending table in supabase
+// If people get tagged as az they should be removed from az_pending table
+// think about more edge cases
+const purgeAzPending = async (client: Client) => {
+  const guild = client.guilds.cache.get(config.id_guild);
+  const { rows: azPendingPurgeList } = await pool.query(
+    "DELETE FROM pending_az WHERE conferment_timestamp < current_timestamp - INTERVAL '3 days' RETURNING discord_user_id"
+  );
+  azPendingPurgeList.forEach((member) => {
+    const purgableMember = guild?.members.cache.get(member.discord_user_id);
+    if (purgableMember?.roles.cache.has(config.role_az_pending)) {
+      purgableMember.roles.remove(config.role_az_pending);
+    }
+  });
+};
+
+setInterval(purgeAzPending, 3600 * 1000, client);
 setInterval(setAbyssalMemberCountAsActivity, 3600 * 1000, client);
