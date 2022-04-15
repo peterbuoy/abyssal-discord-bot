@@ -10,7 +10,7 @@ export default {
   name: "update",
   category: "Gear",
   description:
-    "Starts gear update request process. Remember to attach an image. You can choose to update parts of your character. e.g. %update 300/300/300 is valid",
+    "Starts gear update request process. Remember to attach an image.",
   slash: false,
   testOnly: false,
   minArgs: 0,
