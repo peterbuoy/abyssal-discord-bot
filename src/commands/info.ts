@@ -25,17 +25,19 @@ export default {
       return;
     }
     let targetID = "";
-    if (message.mentions.members?.first()?.id !== undefined) {
-      targetID = message.mentions.members?.first()?.id as string;
-      console.log(`targetID set to ${targetID}`);
+    let sheetTitle = "";
+    const firstMentionedMember = message.mentions.members?.first();
+    if (firstMentionedMember?.id !== undefined) {
+      targetID = firstMentionedMember.id as string;
+      sheetTitle = firstMentionedMember.roles.cache.has(config.role_ab)
+        ? config.ab_sheet_title
+        : config.az_sheet_title;
     } else {
+      sheetTitle = member.roles.cache.has(config.role_ab)
+        ? config.ab_sheet_title
+        : config.az_sheet_title;
       targetID = member.id;
-      console.log(`targetID set to ${targetID}`);
     }
-
-    const sheetTitle = member.roles.cache.has(config.role_ab)
-      ? config.ab_sheet_title
-      : config.az_sheet_title;
 
     const sheet = await getSheetByTitle(sheetTitle);
     const rows = await sheet?.getRows();
