@@ -58,14 +58,18 @@ export default {
         value: `Last updated: ${targetRow["Gear Timestamp"]}`,
       })
       .addFields(
-        { name: "Name", value: targetRow["Character Name"], inline: true },
-        { name: "Class", value: targetRow["Class"], inline: true },
+        {
+          name: "Name",
+          value: targetRow["Character Name"] || "n/a",
+          inline: true,
+        },
+        { name: "Class", value: targetRow["Class"] || "n/a", inline: true },
         {
           name: "Gear",
           value: `${targetRow["AP"]}/${targetRow["Awaken AP"]}/${targetRow["DP"]} (${targetRow["Gear Score"]})`,
           inline: true,
         },
-        { name: "Level", value: targetRow["Level"] }
+        { name: "Level", value: targetRow["Level"] || "n/a" }
       )
       .setImage(targetRow["Gear Screenshot"]);
     message.reply({ embeds: [newEmbed] });
