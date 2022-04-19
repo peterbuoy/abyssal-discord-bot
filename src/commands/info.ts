@@ -27,8 +27,10 @@ export default {
     let targetID = "";
     if (message.mentions.members?.first()?.id !== undefined) {
       targetID = message.mentions.members?.first()?.id as string;
+      console.log(`targetID set to ${targetID}`);
     } else {
       targetID = member.id;
+      console.log(`targetID set to ${targetID}`);
     }
 
     const sheetTitle = member.roles.cache.has(config.role_ab)
@@ -39,7 +41,9 @@ export default {
     const rows = await sheet?.getRows();
     const targetRow = rows?.find((row) => row["Discord UserID"] === targetID);
     if (targetRow === undefined)
-      throw Error("User not found in sheet when called with info command");
+      throw Error(
+        `User with id, ${targetID}, not found in sheet when called with info command`
+      );
     const newEmbed = new Embed()
       .setTitle(
         `${
