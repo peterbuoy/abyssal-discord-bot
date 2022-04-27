@@ -5,8 +5,11 @@ export default {
   category: "Fun",
   description: "Skip the bullshit and get the answers you need",
   cooldown: "30s",
+  slash: false,
+  testOnly: false,
+
   callback: async ({ message }) => {
-    let answers = [
+    const answers = [
       "honestly I'd tell you but I don't think you'd understand the answer",
       "asking that question in the first place makes me want to gkick you",
       "go read <#694386483217301524> or <#635721149204004864> or <#412900828328886273> or <#415340796561195008> or <#711175769077841990> or ask the bot with !help or one of the MILLION OTHER FUCKING PLACES THAT QUESTION HAS BEEN ANSWERED",
