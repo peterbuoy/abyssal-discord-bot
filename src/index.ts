@@ -140,8 +140,8 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
     (oldMember.roles.cache.has(config.role_az) &&
       !newMember.roles.cache.has(config.role_az))
   ) {
-    addToDumpSheet(oldMember);
-    removeFromSheet(oldMember);
+    await addToDumpSheet(oldMember);
+    await removeFromSheet(oldMember);
     if (oldMember.roles.cache.has(config.role_ab)) {
       await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
         oldMember.id,

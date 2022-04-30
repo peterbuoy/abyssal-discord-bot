@@ -13,8 +13,8 @@ const removeFromSheet = async (oldMember: GuildMember | PartialGuildMember) => {
     const sheet = await getSheetByTitle(sheetTitle);
     const rows = await sheet?.getRows();
     // use forEach to remove potential repeated members (happened before)
-    rows?.forEach((row) => {
-      if (row["Discord UserID"] === oldMember.id) row.delete();
+    rows?.forEach(async (row) => {
+      if (row["Discord UserID"] === oldMember.id) await row.delete();
     });
   } catch (error) {
     console.error(error);
