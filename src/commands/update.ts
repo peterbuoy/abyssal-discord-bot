@@ -5,6 +5,10 @@ import { ICommand } from "wokcommands";
 import config from "../config";
 import { userMention } from "@discordjs/builders";
 import { addToDumpSheet } from "../utils/addToDumpSheet";
+import tz from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+dayjs.extend(tz);
 
 export default {
   name: "update",
@@ -50,9 +54,34 @@ export default {
     // We can simplify the code by not worrying TOO much about data integrity
     // since gear requests are manually verified anyway.
 
-    // Dynamically create a collection with the values that need to be updated
-    // Use updateInfo to add only the necessary values to the GoogleSpreadsheet
+    const sheet = await getSheetByTitle(
+      member.roles.cache.has(config.role_ab)
+        ? config.ab_sheet_title
+        : config.az_sheet_title
+    );
+    const rows = await sheet?.getRows();
+    const originalRow = rows?.find(
+      (row) => row["Discord UserID"] === member.user.id
+    );
+    if (originalRow === undefined) {
+      throw Error(
+        "User was not able to be found in spreadsheet but attempted to start a gear update."
+      );
+    }
+
+    // We initialize these values to ensure that the first gear update must
+    // contain all values listed:
+    // character name, class, level
     const updateInfo: Collection<string, string | null> = new Collection();
+    updateInfo.set("Character Name", originalRow["Character Name"]);
+    updateInfo.set("Class", originalRow["Class"]);
+    updateInfo.set("Level", originalRow["Level"]);
+    // Derived value, so not necessary
+    // updateInfo.set("Gear Score", originalRow["Gear Score"]);
+    updateInfo.set("AP", originalRow["AP"]);
+    updateInfo.set("Awaken AP", originalRow["Awaken AP"]);
+    updateInfo.set("DP", originalRow["DP"]);
+
     const argsLowerCase = args.map((arg) => arg.toLowerCase());
 
     updateInfo.set("Gear Screenshot", image!.url);
@@ -116,6 +145,22 @@ export default {
         ).toString();
         updateInfo.set("Gear Score", gearScore);
       }
+    }
+
+    // Check update info if there is anything missing and print it as an error message
+    const missingUpdateInfo = updateInfo.filter((value) => value === "");
+    if (missingUpdateInfo.size > 0) {
+      // There's a cleaner way to map the collection to strings, but eh
+      let missingInfo = "";
+      missingUpdateInfo.forEach((value, key) => (missingInfo += `${key}\n`));
+      message.reply(
+        `Please make sure to include the following missing information:\n**${missingInfo}**
+        Here is an example of a complete update.
+        \`%update Character Gaisgeil Class Ninja level 62 123/456/789\`
+        You only have to do a complete update your first time. 
+        Afterwards you can just do \`%update 300/301/302\` `
+      );
+      return;
     }
 
     // Confirmation message
@@ -313,7 +358,8 @@ function parseClassName(className: string) {
   else if (className == "sage") className = "Sage";
   else if (className == "corsair" || className == "courser")
     className = "Corsair";
-  else if (className == "drakania") className = "Drakania";
+  else if (className == "drakania" || className == "drakonia")
+    className = "Drakania";
   else className = "INVALID";
 
   return className;
