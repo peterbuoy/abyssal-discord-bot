@@ -17,6 +17,9 @@ export default {
       message.reply(`You can only use this in <#${config.chan_gear_update}> `);
       return;
     }
+
+    // This would be a lot easier if there was a clean way to get column values as an array
+
     const sheet = await getSheetByTitle(config.ab_sheet_title);
     const allRows = await sheet?.getRows();
     const rows = allRows?.filter((row) => row["Gear Score"] !== "");
@@ -34,8 +37,7 @@ export default {
       // Class counter
       if (!classMap.has(row["Class"])) {
         classMap.set(row["Class"], 1);
-      }
-      if (classMap.has(row["Class"])) {
+      } else if (classMap.has(row["Class"])) {
         classMap.set(row["Class"], classMap.get(row["Class"])! + 1);
       }
     });
