@@ -26,17 +26,24 @@ export default {
     }
     let targetID = "";
     let sheetTitle = "";
+    let guildName = "";
     const firstMentionedMember = message.mentions.members?.first();
     if (firstMentionedMember?.id !== undefined) {
       targetID = firstMentionedMember.id as string;
       sheetTitle = firstMentionedMember.roles.cache.has(config.role_ab)
         ? config.ab_sheet_title
         : config.az_sheet_title;
+      guildName = firstMentionedMember.roles.cache.has(config.role_ab)
+        ? "<Abyssal>"
+        : "<Azurlane>";
     } else {
       sheetTitle = member.roles.cache.has(config.role_ab)
         ? config.ab_sheet_title
         : config.az_sheet_title;
       targetID = member.id;
+      guildName = member.roles.cache.has(config.role_ab)
+        ? "<Abyssal>"
+        : "<Azurlane>";
     }
 
     const sheet = await getSheetByTitle(sheetTitle);
@@ -47,11 +54,7 @@ export default {
         `User with id, ${targetID}, not found in sheet when called with info command`
       );
     const newEmbed = new Embed()
-      .setTitle(
-        `${
-          member.roles.cache.has(config.role_ab) ? "<Abyssal>" : "<Azurlane>"
-        } ${targetRow["Family Name"]}`
-      )
+      .setTitle(`${guildName} ${targetRow["Family Name"]}`)
 
       .addField({
         name: "__**Character Stats**__",
