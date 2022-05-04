@@ -27,6 +27,7 @@ const dev_config = {
   ab_dump_sheet_title: "KC Dump",
   az_sheet_title: "AZ Member List",
   az_dump_sheet_title: "AZ Dump",
+  asksaki_sheet_id: "1A2wViArw9C_5tT9dB-L0_mEjG39hp2WY3BTDQK8__js/",
   id_peterbuoy: "131965968980246529",
   prefix: "%",
   class_roles: {
@@ -81,6 +82,7 @@ const prod_config = {
   ab_dump_sheet_title: "KC Dump",
   az_sheet_title: "AZ Member List",
   az_dump_sheet_title: "AZ Dump",
+  asksaki_sheet_id: "1A2wViArw9C_5tT9dB-L0_mEjG39hp2WY3BTDQK8__js/",
   id_peterbuoy: "131965968980246529",
   prefix: "%",
   class_roles: {
