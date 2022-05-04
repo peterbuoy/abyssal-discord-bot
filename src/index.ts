@@ -1,26 +1,26 @@
 import { Client, Intents, TextChannel } from "discord.js";
-import fs from "fs";
+import { userMention } from "@discordjs/builders";
+
 import path from "path";
 import WOKCommands from "wokcommands";
 import dotenv from "dotenv";
 import config from "./config";
-import { removeFromSheet } from "./utils/removeFromSheet";
 import utils from "./utils/utils";
-import { userMention } from "@discordjs/builders";
 import pool from "./db/index";
-import { updateOrCreateWarSignups } from "./utils/updateOrCreateWarSignups";
 import dayjs from "dayjs";
 import tz from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { addToDumpSheet } from "./utils/addToDumpSheet";
-import { createWarSignUpCollector } from "./collectors/createWarSignUpCollector";
-import { getSheetByTitle } from "./utils/getSheetByTitle";
-import { addToSheet } from "./utils/addToSheet";
-import { sendWelcomeMessage } from "./utils/sendWelcomeMessage";
-import { updateSheetFamilyName } from "./utils/updateSheetFamilyName";
-import { channel } from "diagnostics_channel";
 dayjs.extend(utc);
 dayjs.extend(tz);
+
+import { addToSheet } from "./utils/addToSheet";
+import { removeFromSheet } from "./utils/removeFromSheet";
+import { getSheetByTitle } from "./utils/getSheetByTitle";
+import { addToDumpSheet } from "./utils/addToDumpSheet";
+import { updateSheetFamilyName } from "./utils/updateSheetFamilyName";
+import { sendWelcomeMessage } from "./utils/sendWelcomeMessage";
+import { updateOrCreateWarSignups } from "./utils/updateOrCreateWarSignups";
+import { createWarSignUpCollector } from "./collectors/createWarSignUpCollector";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -38,23 +38,6 @@ export const client = new Client({
 const token = process.env.BOT_TOKEN;
 
 client.login(token);
-
-// All event files were moved to index.ts so the event loader has been commented out
-/* const eventFiles = fs
-  .readdirSync(path.join(__dirname, "events"))
-  .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
-
-// dynamically import events from ./src/events
-(async () => {
-  for (const file of eventFiles) {
-    const event = await import(`./events/${file}`);
-    if (event.once) {
-      client.once(event.name, (...args) => event.execute(...args));
-    } else {
-      client.on(event.name, (...args) => event.execute(...args));
-    }
-  }
-})(); */
 
 client.on("ready", async (client) => {
   if (!client.user || !client.application) {
@@ -114,6 +97,7 @@ client.on("ready", async (client) => {
   createWarSignUpCollector(client);
 });
 
+// Event listener for role tagging and name enforcement of ABAZ members
 client.on("guildMemberUpdate", async (oldMember, newMember) => {
   const userID = oldMember.id;
   const staffBotNotifChannel = newMember.guild.channels.cache.get(
@@ -189,7 +173,7 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
   }
 });
 
-// If you put this in events it won't detect the removal
+// Event listener for an ABAZ member leaving the Discord server
 client.on("guildMemberRemove", async (member) => {
   if (!member.roles.cache.hasAny(config.role_ab, config.role_az)) {
     return;
@@ -219,6 +203,7 @@ client.on("guildMemberRemove", async (member) => {
 client.on("warn", console.warn);
 client.on("error", console.error);
 
+// Function sets bot activity as the count based on those in the google sheet
 const setAbyssalMemberCountAsActivity = async (client: Client) => {
   console.log("getting abyssal member count");
   const abSheet = await getSheetByTitle(config.ab_sheet_title);
@@ -233,9 +218,7 @@ const setAbyssalMemberCountAsActivity = async (client: Client) => {
   client.user?.setActivity(`${abMemberCount} members`, { type: "PLAYING" });
 };
 
-// If people get tagged as az_pending via join you need to add people to the az_pending table in supabase
-// If people get tagged as az they should be removed from az_pending table
-// think about more edge cases
+// Function removes pending AZ members after 3 days
 const purgeAzPending = async (client: Client) => {
   const guild = client.guilds.cache.get(config.id_guild);
   const { rows: azPendingPurgeList } = await pool.query(
