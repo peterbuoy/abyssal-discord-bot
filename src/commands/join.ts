@@ -106,8 +106,12 @@ Then try again in 60 seconds.`);
               channel.send({
                 content: `Congratulations on completing the application process! You have been tagged as a pending **<AzurLane>** member! The <@&${
                   config.role_gm_az
-                }> will get to you shortly. If you don't get a ping within 5 minutes, it means that they are not currently available to invite right now. Feel free to ping ${roleMention(
+                }> or ${roleMention(
+                  config.role_az_officer
+                )} will get to you shortly. If you don't get a ping within 5 minutes, it means that they are not currently available to invite right now. Feel free to ping ${roleMention(
                   config.role_gm_az
+                )} or ${roleMention(
+                  config.role_az_officer
                 )} in a few hours to see if they are around!
               **Please note that your pending tag will be automatically removed in 72 hours. You will have to reapply if you do not get invited within that time**`,
               });
