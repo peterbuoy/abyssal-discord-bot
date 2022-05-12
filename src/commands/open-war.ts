@@ -4,7 +4,7 @@ import { ICommand } from "wokcommands";
 import config from "../config";
 import { MessageEmbed, TextChannel } from "discord.js";
 import utils from "../utils/utils";
-import { codeBlock } from "@discordjs/builders";
+import { channelMention, codeBlock } from "@discordjs/builders";
 import { createWarSignUpCollector } from "../collectors/createWarSignUpCollector";
 
 export default {
@@ -24,7 +24,11 @@ export default {
       channel.id !== config.chan_war_bot_spam ||
       !message.member?.roles.cache.has(config.role_war_staff)
     ) {
-      message.reply("You can only use this in the warbot-spam channel.");
+      message.reply(
+        `Only warstaff only use this in the ${channelMention(
+          config.chan_war_bot_spam
+        )}`
+      );
       return;
     }
     const warName = args[0].split("_").join(" ");

@@ -1,4 +1,4 @@
-import { roleMention } from "@discordjs/builders";
+import { channelMention, roleMention } from "@discordjs/builders";
 import { ButtonInteraction, MessageActionRow } from "discord.js";
 import { ICommand } from "wokcommands";
 import {
@@ -35,7 +35,9 @@ export default {
       channel.id !== config.chan_welcome
     ) {
       message.reply(
-        "This command is only available to guildless members in #welcome."
+        `This command is only available to guildless members in ${channelMention(
+          config.chan_welcome
+        )}`
       );
       return;
     }

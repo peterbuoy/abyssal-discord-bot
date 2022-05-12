@@ -3,6 +3,7 @@ import { ICommand } from "wokcommands";
 import config from "../config";
 import utils from "../utils/utils";
 import { TextChannel } from "discord.js";
+import { channelMention } from "@discordjs/builders";
 
 export default {
   name: "close-war",
@@ -20,7 +21,11 @@ export default {
       channel.id !== config.chan_war_bot_spam ||
       !message.member?.roles.cache.has(config.role_war_staff)
     ) {
-      message.reply("Only warstaff can use this in the #warbot-spam.");
+      message.reply(
+        `Only warstaff can use this in ${channelMention(
+          config.chan_war_bot_spam
+        )}`
+      );
       return;
     }
     const currentWar = await pool.query(

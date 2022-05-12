@@ -215,7 +215,9 @@ const setAbyssalMemberCountAsActivity = async (client: Client) => {
     }
   });
   console.log(abMemberCount);
-  client.user?.setActivity(`${abMemberCount} members`, { type: "PLAYING" });
+  client.user?.setActivity(`${abMemberCount} members. %help for help`, {
+    type: "WATCHING",
+  });
 };
 
 // Function removes pending AZ members after 3 days

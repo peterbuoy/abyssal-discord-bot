@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { ICommand } from "wokcommands";
 import config from "../config";
-import { userMention } from "@discordjs/builders";
+import { channelMention, userMention } from "@discordjs/builders";
 import { addToDumpSheet } from "../utils/addToDumpSheet";
 import tz from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -29,7 +29,11 @@ export default {
       channel.id !== config.chan_gear_update ||
       !member.roles.cache.hasAny(config.role_ab, config.role_az)
     ) {
-      message.reply("You can only use this in the gear update channel.");
+      message.reply(
+        `Only Abyssal and Azurlane members can use this in ${channelMention(
+          config.chan_gear_update
+        )}.`
+      );
       return;
     }
 

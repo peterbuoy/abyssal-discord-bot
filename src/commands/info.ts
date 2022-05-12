@@ -1,7 +1,7 @@
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { ICommand } from "wokcommands";
 import config from "../config";
-import { Embed } from "@discordjs/builders";
+import { channelMention, Embed } from "@discordjs/builders";
 
 export default {
   name: "info",
@@ -21,7 +21,9 @@ export default {
       channel.id !== config.chan_gear_update ||
       !member.roles.cache.hasAny(config.role_az, config.role_ab)
     ) {
-      message.reply("You can only use this in the gear update channel.");
+      message.reply(
+        `You can only use this in ${channelMention(config.chan_gear_update)}`
+      );
       return;
     }
     let targetID = "";

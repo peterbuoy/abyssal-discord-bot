@@ -1,6 +1,7 @@
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { ICommand } from "wokcommands";
 import config from "../config";
+import { channelMention } from "@discordjs/builders";
 
 export default {
   category: "Management",
@@ -15,7 +16,11 @@ export default {
       !member.roles.cache.hasAny(config.role_ab, config.role_az) ||
       channel.id !== config.chan_contact_an_officer
     ) {
-      message.reply("You can only use this in the contact an officer channel.");
+      message.reply(
+        `Only Abyssal or Azurlane members can use this in ${channelMention(
+          config.chan_contact_an_officer
+        )}`
+      );
       return;
     }
     let sheetTitle = "";

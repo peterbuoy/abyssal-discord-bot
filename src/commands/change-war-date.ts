@@ -4,6 +4,7 @@ import config from "../config";
 import utils from "../utils/utils";
 import { MessageEmbed, TextChannel } from "discord.js";
 import dayjs from "dayjs";
+import { channelMention } from "@discordjs/builders";
 
 export default {
   name: "change-war-date",
@@ -20,7 +21,11 @@ export default {
       !member.roles.cache.has(config.role_war_staff) ||
       channel.id !== config.chan_war_bot_spam
     ) {
-      message.reply("You can only use this in the warbot-spam channel.");
+      message.reply(
+        `Only warstaff can only use this in ${channelMention(
+          config.chan_war_bot_spam
+        )}`
+      );
       return;
     }
 
@@ -47,6 +52,8 @@ export default {
       const embedMessage = messages.find(
         (message) => message.author.bot && message.embeds.length > 0
       );
+      // Retains the original title of the war via embedMessage?.embeds[0] as an arg for the MessageEmbed constructor
+      // Must update the other fields such as "Date" and "Instructions"
       const newEmbed = new MessageEmbed(embedMessage?.embeds[0]).setFields(
         {
           name: "Date",

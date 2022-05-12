@@ -19,13 +19,8 @@ export default {
   maxArgs: 0,
   syntax: "war-stats",
   callback: async ({ member, channel }) => {
-    if (channel.id !== config.chan_war_bot_spam) {
-      channel.send(
-        "This command can only be used in #war-bot-spam or #war-council by war-staff"
-      );
-      return;
-    }
     if (
+      channel.id !== config.chan_war_bot_spam ||
       !member.roles.cache.hasAny(config.role_admin || config.role_war_staff)
     ) {
       channel.send(
@@ -41,7 +36,7 @@ export default {
     // <Discord userID, [attendanceCount, mostRecentWarDate]
     const attendance = new Collection<string, [number, string]>();
     // Note that query orders by date_of_war ASC
-    // order is preserved using forEach so mostRecentWarDate is overwritten correctly
+    // and order is preserved using forEach so mostRecentWarDate is overwritten correctly
     rows.forEach((row) => {
       for (const key in row.signuplist) {
         if (!attendance.has(key)) {

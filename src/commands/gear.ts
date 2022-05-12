@@ -1,7 +1,7 @@
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { ICommand } from "wokcommands";
 import config from "../config";
-import { codeBlock } from "@discordjs/builders";
+import { channelMention, codeBlock } from "@discordjs/builders";
 import dayjs from "dayjs";
 
 export default {
@@ -22,7 +22,9 @@ export default {
       message.channelId !== config.chan_gear_update ||
       !member.roles.cache.hasAny(config.role_az, config.role_ab)
     ) {
-      message.reply("You can only use this in the gear update channel.");
+      message.reply(
+        `You can only use this in ${channelMention(config.chan_gear_update)}`
+      );
       return;
     }
 
