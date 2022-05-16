@@ -49,10 +49,7 @@ export default {
             ? currentWar.rows[0].attendee_cap
             : "None"
         }\n` +
-        `Min GS: ${
-          config.ab_min_gear_score
-          //currentWar.rows[0].min_gs ? currentWar.rows[0].min_gs : "None"
-        }\n` +
+        `Min GS: None\n` +
         `PVP Prof: ${
           currentWar.rows[0].require_pvp_proficiency
             ? "NOT REQUIRED"

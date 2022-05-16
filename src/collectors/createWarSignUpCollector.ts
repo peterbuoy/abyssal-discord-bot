@@ -57,11 +57,6 @@ const createWarSignUpCollector = async (
             "Could not find user in sheet when signing up for Node War"
           );
         }
-        if (userInfo["Gear Score"] < config.ab_min_gear_score) {
-          throw new Error(
-            `User ${user.username} does not meet minimum gear score requirement but attempted to sign up for Node War`
-          );
-        }
         const values = [
           JSON.stringify({
             [user.id]: {
