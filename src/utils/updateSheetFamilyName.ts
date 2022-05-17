@@ -14,14 +14,21 @@ const updateSheetFamilyName = async (
   }
   try {
     const sheet = await getSheetByTitle(sheetTitle);
-    const rows = await sheet?.getRows();
-    // uses forEach instead of find because there may be replicated users (consider fixing?)
-    rows?.forEach(async (row) => {
-      if (row["Discord UserID"] === newMember.id) {
-        row["Family Name"] = util.parseFamilyName(newMember.displayName);
-        await row.save();
+    await sheet?.loadCells("A2:B");
+    const rowCount = sheet?.rowCount ?? 100;
+    // sheets are zero indexed
+    // Discord UserID is in column A (index 0)
+    // Family  Name is in column B (index 1)
+    for (let i = 1; i < rowCount; i++) {
+      // if Discord ID in google sheet matches emitted member ID
+      if (sheet?.getCell(i, 0).value === newMember.id) {
+        // get the family name column value of that row and change it to the new member display name
+        const targetCell = sheet?.getCell(i, 1);
+        targetCell.value = util.parseFamilyName(newMember.displayName);
+        targetCell.save();
+        break;
       }
-    });
+    }
   } catch (error) {
     console.error(error);
   }
