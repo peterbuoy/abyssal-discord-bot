@@ -1,6 +1,6 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
 import { getSheetByTitle } from "./getSheetByTitle";
-import util from "../utils/utils";
+import utils from "./utils";
 import config from "../config";
 
 const updateSheetFamilyName = async (
@@ -24,7 +24,7 @@ const updateSheetFamilyName = async (
       if (sheet?.getCell(i, 0).value === newMember.id) {
         // get the family name column value of that row and change it to the new member display name
         const targetCell = sheet?.getCell(i, 1);
-        targetCell.value = util.parseFamilyName(newMember.displayName);
+        targetCell.value = utils.parseFamilyName(newMember.displayName);
         targetCell.save();
         break;
       }
