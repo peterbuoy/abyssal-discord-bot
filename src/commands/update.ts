@@ -76,7 +76,8 @@ export default {
     // We initialize these values to ensure that the first gear update must
     // contain all values listed:
     // character name, class, level
-    const updateInfo: Collection<string, string | null> = new Collection();
+    const updateInfo: Collection<string, string | number | boolean> =
+      new Collection();
     updateInfo.set("Character Name", originalRow["Character Name"]);
     updateInfo.set("Class", originalRow["Class"]);
     updateInfo.set("Level", originalRow["Level"]);
@@ -105,8 +106,7 @@ export default {
       try {
         // Assign class role. className from config are all lower case with underscores instead of spaces
         const class_roles: { [className: string]: string } = config.class_roles;
-        const jsonClassName = updateInfo
-          .get("Class")!
+        const jsonClassName = (updateInfo.get("Class") as string)
           .toLowerCase()
           .split(" ")
           .join("_");
@@ -209,7 +209,7 @@ export default {
           "collect",
           async (reaction: MessageReaction, reactionUser: User) => {
             if (reaction.emoji.name === "✅") {
-              updateInfo.set("Awaken AP Gained", null);
+              updateInfo.set("Awaken AP Gained", 0);
               updateInfo.set(
                 "Gear Timestamp",
                 dayjs().tz("America/Los_Angeles").format("MM/DD/YYYY h:mm A")
@@ -224,6 +224,9 @@ export default {
                 throw Error("Member does not have a valid role");
               }
               const sheet = await getSheetByTitle(sheetTitle);
+              if (sheet === undefined) {
+                throw Error("Error accessing sheet in %update");
+              }
               const rows = await sheet?.getRows();
               const targetRow = rows?.find(
                 (row) => row["Discord UserID"] === member.user.id
@@ -239,10 +242,40 @@ export default {
                 );
               }
               await addToDumpSheet(member);
-              updateInfo.forEach((value, columnName) => {
-                targetRow[columnName] = value;
-              });
-              await targetRow.save();
+              // I am lazy, so just use the targetRow.index to target the row
+              // then just write the cells for that
+              /*
+              updateInfo.set("Character Name", originalRow["Character Name"]);
+              updateInfo.set("Class", originalRow["Class"]);
+              updateInfo.set("Level", originalRow["Level"]);
+              // Derived value, so not necessary
+              // updateInfo.set("Gear Score", originalRow["Gear Score"]);
+              updateInfo.set("AP", originalRow["AP"]);
+              updateInfo.set("Awaken AP", originalRow["Awaken AP"]);
+              updateInfo.set("DP", originalRow["DP"]);
+              updateInfo.get("Gear Timestamp")
+              updateInfo.get("Gear Screenshot")
+              */
+              console.log(targetRow.rowIndex);
+              await sheet.loadCells(
+                `J${targetRow.rowIndex}:T${targetRow.rowIndex}`
+              );
+              const cellRowIndex = targetRow.rowIndex - 1;
+              sheet.getCell(cellRowIndex, 9).value =
+                updateInfo.get("Character Name")!;
+              sheet.getCell(cellRowIndex, 10).value = updateInfo.get("Class")!;
+              sheet.getCell(cellRowIndex, 11).value = updateInfo.get("Level")!;
+              sheet.getCell(cellRowIndex, 13).value =
+                updateInfo.get("Gear Score")!;
+              sheet.getCell(cellRowIndex, 14).value = updateInfo.get("AP")!;
+              sheet.getCell(cellRowIndex, 15).value =
+                updateInfo.get("Awaken AP")!;
+              sheet.getCell(cellRowIndex, 16).value = updateInfo.get("DP")!;
+              sheet.getCell(cellRowIndex, 18).value =
+                updateInfo.get("Gear Timestamp")!;
+              sheet.getCell(cellRowIndex, 19).value =
+                updateInfo.get("Gear Screenshot")!;
+              sheet.saveUpdatedCells();
 
               await gearUpdateMsg.edit(
                 `**__Update Requested by__** ${message.author}\n` +
