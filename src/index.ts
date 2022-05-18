@@ -210,7 +210,7 @@ const setAbyssalMemberCountAsActivity = async (client: Client) => {
   const rows = await abSheet?.getRows();
   let abMemberCount = 0;
   rows?.forEach((row) => {
-    if (row["Discord UserID"] !== undefined) {
+    if (row["Discord UserID"] !== "") {
       abMemberCount += 1;
     }
   });
