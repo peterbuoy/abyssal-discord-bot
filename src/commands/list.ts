@@ -48,7 +48,7 @@ export default {
     const memberCollection: Collection<string, [string, string]> =
       new Collection();
     rows?.forEach((row) => {
-      if (row["Discord UserID"] !== undefined) {
+      if (row["Discord UserID"] !== "") {
         memberCollection.set(row["Discord UserID"], [
           row["Family Name"],
           row["Vacation Info"],
