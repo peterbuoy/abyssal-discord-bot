@@ -22,7 +22,9 @@ export default {
 
     const sheet = await getSheetByTitle(config.ab_sheet_title);
     const allRows = await sheet?.getRows();
-    const rows = allRows?.filter((row) => row["Gear Score"] !== "");
+    const rows = allRows?.filter(
+      (row) => row["Gear Score"] !== "" && row["Gear Score"] !== undefined
+    );
     const classMap: Collection<string, number> = new Collection();
     let minGS = Number.POSITIVE_INFINITY;
     let maxGS = Number.NEGATIVE_INFINITY;
