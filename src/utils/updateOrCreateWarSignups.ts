@@ -46,10 +46,9 @@ const updateOrCreateWarSignups = async () => {
         " "
       )}${noob.character_name.toString().padEnd(17, " ")}${noob.class
         .toString()
-        .padEnd(12, " ")}${noob.lvl.toString().padEnd(4, " ")}${noob.gs.padEnd(
-        5,
-        " "
-      )}${noob.timestamp}\n`;
+        .padEnd(12, " ")}${noob.lvl.toString().padEnd(4, " ")}${noob.gs
+        .toString()
+        .padEnd(5, " ")}${noob.timestamp}\n`;
     });
   } catch (error) {
     console.error(error);
