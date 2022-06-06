@@ -77,6 +77,7 @@ export default {
             "User was not able to be found in spreadsheet but attempted to start a gear update."
           );
         });
+      return;
     }
 
     // We initialize these values to ensure that the first gear update must
