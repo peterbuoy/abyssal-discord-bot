@@ -85,13 +85,13 @@ export default {
     const updateInfo: Collection<string, string | number | boolean> =
       new Collection();
     updateInfo.set("Character Name", originalRow["Character Name"]);
-    updateInfo.set("Class", originalRow["Class"]);
-    updateInfo.set("Level", originalRow["Level"]);
+    updateInfo.set("Class", originalRow["Class"] || "?");
+    updateInfo.set("Level", originalRow["Level"] || "?");
     // Derived value, so not necessary
     // updateInfo.set("Gear Score", originalRow["Gear Score"]);
-    updateInfo.set("AP", originalRow["AP"]);
-    updateInfo.set("Awaken AP", originalRow["Awaken AP"]);
-    updateInfo.set("DP", originalRow["DP"]);
+    updateInfo.set("AP", originalRow["AP"] || "?");
+    updateInfo.set("Awaken AP", originalRow["Awaken AP"] || "?");
+    updateInfo.set("DP", originalRow["DP"] || "?");
 
     const argsLowerCase = args.map((arg) => arg.toLowerCase());
 
