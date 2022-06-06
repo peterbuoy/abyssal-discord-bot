@@ -18,7 +18,16 @@ const createWarSignUpCollector = async (
   if (typeof embed_msg_id == "undefined") {
     embed_msg_id = await pool
       .query(`SELECT embed_msg_id FROM warsignup WHERE is_active = true`)
-      .then((qResult: QueryResult) => qResult.rows[0].embed_msg_id);
+      .then((qResult: QueryResult) => {
+        const embed_msg_id = qResult.rows[0].embed_msg_id;
+        try {
+          if (!embed_msg_id) {
+            throw new Error("lol");
+          } else return embed_msg_id;
+        } catch (err) {
+          console.error(err);
+        }
+      });
   }
   const nodeWarSignupChan = client.channels.cache.get(
     config.chan_node_war_signup
@@ -32,7 +41,6 @@ const createWarSignUpCollector = async (
   const embedMessage = await nodeWarSignupChan.messages.fetch(
     embed_msg_id as string
   );
-  if (!embedMessage) return;
   const filter = (reaction: MessageReaction, user: User) => {
     if (!user.bot) reaction.users.remove(user);
     const member = client.guilds.cache
@@ -46,6 +54,7 @@ const createWarSignUpCollector = async (
       )
     );
   };
+
   const collector = embedMessage.createReactionCollector({ filter });
   collector.on("collect", async (reaction, user) => {
     console.log(`${user.username} reacted with ${reaction.emoji.name}`);
@@ -101,10 +110,12 @@ const createWarSignUpCollector = async (
           user.id,
         ];
         // this query only successfuly updates if the id is not already a top-level key in the jsonb file, the ? operator
+        console.log("update query lol");
         const updateQuery = await pool.query(
           `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true AND signuplist ? $2 = false RETURNING signuplist`,
           values
         );
+        console.log(updateQuery.rows[0]);
         if (updateQuery.rowCount === 1) {
           attendanceChannel.send(
             `✅ ${userMention(user.id)} has signed up for war`

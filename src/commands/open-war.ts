@@ -32,7 +32,6 @@ export default {
       return;
     }
     const warName = args[0].split("_").join(" ");
-    console.log(args[1]);
     let warDate = "";
     try {
       if (!dayjs(args[1]).isValid()) throw "Invalid date format";
@@ -49,7 +48,6 @@ export default {
     pool
       .query(text, values)
       .then((res) => {
-        console.log(res.rows[0]);
         message.reply(
           `You have opened up a war:\nName: ${warName}\nDate: ${warDate}`
         );
@@ -67,7 +65,11 @@ export default {
       config.chan_node_war_signup
     ) as TextChannel;
     // This fetches UP to x amount of messages and deletes them via bulk delete discord api call
-    await nodeWarSignupChan.bulkDelete(10);
+    await nodeWarSignupChan.bulkDelete(15);
+    // const messages = await nodeWarSignupChan.messages.fetch({ limit: 10 });
+    // messages.forEach(
+    //   async (message) => await nodeWarSignupChan.messages.delete(message.id)
+    // );
 
     const exampleEmbed = new MessageEmbed()
       .setColor("#0099ff")
@@ -104,14 +106,23 @@ export default {
     const gs = "GS".padEnd(5, " ");
     const pvp = "PVP".padEnd(4, " ");
     const time = "Time (PT)";
-    const listMessage = await nodeWarSignupChan.send(
+    const listMessage1 = await nodeWarSignupChan.send(
       codeBlock(
         `${familyName}${characterName}${className}${lvl}${gs}${pvp}${time}`
       )
     );
+    const listMessage2 = await nodeWarSignupChan.send("** **");
+    const listMessage3 = await nodeWarSignupChan.send("** **");
+    const listMessage4 = await nodeWarSignupChan.send("** **");
+    const listMessageValues = [
+      listMessage1.id,
+      listMessage2.id,
+      listMessage3.id,
+      listMessage4.id,
+    ];
     await pool.query(
-      `UPDATE warsignup SET list_msg_id = $1 WHERE is_active = true`,
-      [listMessage.id]
+      `UPDATE warsignup SET list_msg_id = $1, list_msg_id_2 = $2, list_msg_id_3 = $3, list_msg_id_4 = $4 WHERE is_active = true`,
+      listMessageValues
     );
   },
 } as ICommand;
