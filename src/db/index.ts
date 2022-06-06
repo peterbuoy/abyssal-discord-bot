@@ -8,4 +8,4 @@ const pool = new Pool({
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
 });
-export = pool;
+export { pool };

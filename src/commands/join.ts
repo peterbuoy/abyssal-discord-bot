@@ -10,7 +10,7 @@ import {
 import config from "../config";
 import got from "got";
 import utils from "../utils/utils";
-import pool from "../db/index";
+import { pool } from "../db/index";
 
 export default {
   name: "join",

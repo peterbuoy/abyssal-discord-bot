@@ -1,4 +1,4 @@
-import pool from "../db/index";
+import { pool } from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config";
 import utils from "../utils/utils";

@@ -6,7 +6,7 @@ import WOKCommands from "wokcommands";
 import dotenv from "dotenv";
 import config from "./config";
 import utils from "./utils/utils";
-import pool from "./db/index";
+import { pool } from "./db/index";
 import dayjs from "dayjs";
 import tz from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";

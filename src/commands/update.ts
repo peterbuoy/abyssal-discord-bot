@@ -68,9 +68,15 @@ export default {
       (row) => row["Discord UserID"] === member.user.id
     );
     if (originalRow === undefined) {
-      throw Error(
-        "User was not able to be found in spreadsheet but attempted to start a gear update."
-      );
+      await channel
+        .send(
+          "User was not able to be found in spreadsheet but attempted to start a gear update."
+        )
+        .then(() => {
+          throw Error(
+            "User was not able to be found in spreadsheet but attempted to start a gear update."
+          );
+        });
     }
 
     // We initialize these values to ensure that the first gear update must

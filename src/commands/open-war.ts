@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import pool from "../db/index";
+import { pool } from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config";
 import { MessageEmbed, TextChannel } from "discord.js";

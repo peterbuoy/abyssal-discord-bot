@@ -1,12 +1,13 @@
 import { userMention } from "@discordjs/builders";
 import { Client, MessageReaction, TextChannel, User } from "discord.js";
-import pool from "../db";
+import { pool } from "../db/index";
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import { updateOrCreateWarSignups } from "../utils/updateOrCreateWarSignups";
 import config from "../config";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import tz from "dayjs/plugin/timezone";
+import { QueryResult } from "pg";
 dayjs.extend(utc);
 dayjs.extend(tz);
 
@@ -17,7 +18,7 @@ const createWarSignUpCollector = async (
   if (typeof embed_msg_id == "undefined") {
     embed_msg_id = await pool
       .query(`SELECT embed_msg_id FROM warsignup WHERE is_active = true`)
-      .then((qResult) => qResult.rows[0].embed_msg_id);
+      .then((qResult: QueryResult) => qResult.rows[0].embed_msg_id);
   }
   const nodeWarSignupChan = client.channels.cache.get(
     config.chan_node_war_signup
@@ -57,6 +58,9 @@ const createWarSignUpCollector = async (
             "Could not find user in sheet when signing up for Node War"
           );
         }
+        // check if userInfo has the three stipulated values by gais
+        // if missing, send an ephemeral message to user that he values are missing
+        // (and they need to do a new gear update to add gs, family name, and class)
         const values = [
           JSON.stringify({
             [user.id]: {
