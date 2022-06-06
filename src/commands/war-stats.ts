@@ -18,7 +18,7 @@ export default {
   minArgs: 0,
   maxArgs: 0,
   syntax: "war-stats",
-  callback: async ({ member, channel }) => {
+  callback: async ({ member, channel, client }) => {
     if (
       channel.id !== config.chan_war_bot_spam ||
       !member.roles.cache.hasAny(config.role_admin || config.role_war_staff)
@@ -28,6 +28,10 @@ export default {
       );
       return;
     }
+    const members = client.guilds.cache.get(config.id_guild)?.members.cache;
+    const abyssalMembers = members!.filter((member) =>
+      member.roles.cache.has(config.role_ab)
+    );
 
     const queryResult = await pool.query(
       "SELECT name, signuplist, date_of_war FROM warsignup WHERE date_of_war > CURRENT_DATE - INTERVAL '30 days' ORDER BY date_of_war ASC"
@@ -39,6 +43,9 @@ export default {
     // and order is preserved using forEach so mostRecentWarDate is overwritten correctly
     rows.forEach((row) => {
       for (const key in row.signuplist) {
+        if (!abyssalMembers.has(key)) {
+          continue;
+        }
         if (!attendance.has(key)) {
           attendance.set(key, [1, row.date_of_war]);
         } else if (attendance.has(key)) {
