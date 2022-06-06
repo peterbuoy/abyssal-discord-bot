@@ -1,4 +1,4 @@
-import { userMention } from "@discordjs/builders";
+import { channelMention, userMention } from "@discordjs/builders";
 import { Client, MessageReaction, TextChannel, User } from "discord.js";
 import { pool } from "../db/index";
 import { getSheetByTitle } from "../utils/getSheetByTitle";
@@ -25,6 +25,9 @@ const createWarSignUpCollector = async (
   ) as TextChannel;
   const attendanceChannel = client.channels.cache.get(
     config.chan_attendance_log
+  ) as TextChannel;
+  const botSpamChannel = client.channels.cache.get(
+    config.chan_bot_spam
   ) as TextChannel;
   const embedMessage = await nodeWarSignupChan.messages.fetch(
     embed_msg_id as string
@@ -59,8 +62,27 @@ const createWarSignUpCollector = async (
           );
         }
         // check if userInfo has the three stipulated values by gais
-        // if missing, send an ephemeral message to user that he values are missing
-        // (and they need to do a new gear update to add gs, family name, and class)
+        if (
+          userInfo["Character Name"] == "" ||
+          userInfo["Gear Score"] == "" ||
+          userInfo["Class"] == ""
+        ) {
+          await attendanceChannel.send(
+            `:grey_exclamation: ${userMention(
+              userInfo["Discord UserID"]
+            )} attempted to sign up for nodewar but they have not completed a gear update.`
+          );
+          await botSpamChannel.send(
+            `${userMention(
+              userInfo["Discord UserID"]
+            )} Hi, please complete a gear update in ${channelMention(
+              config.chan_gear_update
+            )} before you can sign up for nodewar.`
+          );
+          return;
+        }
+        // if missing, send an ephemeral message to user that the values are missing
+        // (and they need to do a FULL new gear update)
         const values = [
           JSON.stringify({
             [user.id]: {
