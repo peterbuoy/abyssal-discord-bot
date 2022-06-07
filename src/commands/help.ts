@@ -17,7 +17,11 @@ export default {
           config.role_gm_az
         )
       ) {
-        if (command.category !== "Configuration") {
+        if (
+          command.category !== "Configuration" &&
+          command.names![0] !== "absentees"
+        ) {
+          console.log(command.names);
           helpMessage += `\`%${command.names} ${command.syntax}\` \n\t${command.description}\n`;
         }
         // Regular guild members can only see gear commands
