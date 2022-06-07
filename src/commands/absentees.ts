@@ -2,7 +2,7 @@ import { pool } from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config";
 import { userMention } from "@discordjs/builders";
-import { Collection } from "discord.js";
+import { Collection, GuildMember } from "discord.js";
 
 export default {
   name: "absentees",
@@ -28,6 +28,7 @@ export default {
     const abyssalMembers = members!.filter((member) =>
       member.roles.cache.has(config.role_ab)
     );
+    const fillerGuildMember = abyssalMembers.first();
 
     const queryResult = await pool.query(
       "SELECT name, signuplist, date_of_war FROM warsignup WHERE date_of_war > CURRENT_DATE - INTERVAL '30 days' ORDER BY date_of_war ASC"
@@ -36,8 +37,8 @@ export default {
 
     // edit the code below lol
 
-    // <Discord userID, [attendanceCount, mostRecentWarDate]
-    const attendance = new Collection<string, [number, string]>();
+    // <Discord userID, GuildMember>
+    const attendance = new Collection<string, GuildMember>();
     // Note that query orders by date_of_war ASC
     // and order is preserved using forEach so mostRecentWarDate is overwritten correctly
     rows.forEach((row) => {
@@ -47,7 +48,7 @@ export default {
           continue;
         }
         if (!attendance.has(key)) {
-          attendance.set(key, [1, row.date_of_war]);
+          attendance.set(key, fillerGuildMember!);
         }
       }
     });
