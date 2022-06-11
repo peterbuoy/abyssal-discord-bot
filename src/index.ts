@@ -155,6 +155,8 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
   } else if (
     oldMember.nickname !== newMember.nickname &&
     utils.isNameValid(newMember.nickname!) &&
+    utils.parseFamilyName(oldMember.nickname!) !==
+      utils.parseFamilyName(newMember.nickname!) &&
     newMember.roles.cache.hasAny(
       config.role_ab,
       config.role_ab_pending,
