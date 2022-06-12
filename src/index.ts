@@ -1,4 +1,4 @@
-import { Client, Intents, TextChannel } from "discord.js";
+import { Client, DiscordAPIError, Intents, TextChannel } from "discord.js";
 import { userMention } from "@discordjs/builders";
 
 import path from "path";
@@ -204,6 +204,18 @@ client.on("guildMemberRemove", async (member) => {
 
 client.on("warn", console.warn);
 client.on("error", console.error);
+process.on("unhandledRejection", async (error: any) => {
+  const guild = await client.guilds.fetch(config.id_guild);
+  const staffNotificationChannel = (await guild.channels.fetch(
+    config.chan_staff_bot_notif
+  )) as TextChannel;
+  console.error(error);
+  if (error instanceof DiscordAPIError) {
+    staffNotificationChannel.send(
+      `${error.name}\n${error.message}\n${error.path}`
+    );
+  }
+});
 
 // Function sets bot activity as the count based on those in the google sheet
 const setAbyssalMemberCountAsActivity = async (client: Client) => {

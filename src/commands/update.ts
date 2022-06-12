@@ -74,7 +74,7 @@ export default {
         )
         .then(() => {
           throw Error(
-            "User was not able to be found in spreadsheet but attempted to start a gear update."
+            `A user, nickname ${member.nickname}, was not able to be found in spreadsheet but attempted to start a gear update.`
           );
         });
       return;
