@@ -212,7 +212,9 @@ process.on("unhandledRejection", async (error: any) => {
   console.error(error);
   if (error instanceof DiscordAPIError) {
     staffNotificationChannel.send(
-      `${error.name}\n${error.message}\n${error.path}`
+      `${userMention(config.id_peterbuoy)}\n**${error.name}**\n*${
+        error.message
+      }*\n${error.path}`
     );
   }
 });
