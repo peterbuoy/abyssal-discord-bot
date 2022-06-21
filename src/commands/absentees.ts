@@ -56,7 +56,7 @@ export default {
       }
     });
     const absenteeMembers = attendance.difference(abyssalMembers);
-    let statMessage = `*${absenteeMembers.size} members have NOT attended war in the past ${numberOfDaysBack} days*\n`;
+    let statMessage = `*${absenteeMembers.size} members have NOT attended war in the past ${numberOfDaysBack}*\n`;
     absenteeMembers.forEach((value, key) => {
       statMessage += `${userMention(key)}\n`;
     });
