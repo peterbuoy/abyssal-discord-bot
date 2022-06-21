@@ -8,13 +8,15 @@ export default {
   name: "absentees",
   names: "absentees",
   category: "War",
-  description: "List people who have not attended war in the past 30 days.",
+  description:
+    "List people who have not attended war in the specified number of days back.",
   slash: false,
   testOnly: false,
-  minArgs: 0,
-  maxArgs: 0,
-  syntax: "war-stats",
-  callback: async ({ member, channel, client }) => {
+  minArgs: 1,
+  maxArgs: 1,
+  expectedArgs: "[number of days back to check]",
+  syntax: "absentees",
+  callback: async ({ member, channel, client, args }) => {
     if (
       channel.id !== config.chan_war_bot_spam ||
       !member.roles.cache.hasAny(config.role_admin || config.role_war_staff)
@@ -29,9 +31,10 @@ export default {
       member.roles.cache.has(config.role_ab)
     );
     const fillerGuildMember = abyssalMembers.first();
-
+    const numberOfDaysBack = `'${args[0]} dayst'`;
     const queryResult = await pool.query(
-      "SELECT name, signuplist, date_of_war FROM warsignup WHERE date_of_war > CURRENT_DATE - INTERVAL '30 days' ORDER BY date_of_war ASC"
+      "SELECT name, signuplist, date_of_war FROM warsignup WHERE date_of_war > CURRENT_DATE - $1::interval ORDER BY date_of_war ASC",
+      [numberOfDaysBack]
     );
     const rows = queryResult.rows;
 
@@ -53,7 +56,7 @@ export default {
       }
     });
     const absenteeMembers = attendance.difference(abyssalMembers);
-    let statMessage = `*${absenteeMembers.size} members have NOT attended war in the past 30 days*\n`;
+    let statMessage = `*${absenteeMembers.size} members have NOT attended war in the past ${numberOfDaysBack} days*\n`;
     absenteeMembers.forEach((value, key) => {
       statMessage += `${userMention(key)}\n`;
     });
