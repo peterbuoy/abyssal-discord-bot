@@ -31,7 +31,7 @@ export default {
       member.roles.cache.has(config.role_ab)
     );
     const fillerGuildMember = abyssalMembers.first();
-    const numberOfDaysBack = `'${args[0]} dayst'`;
+    const numberOfDaysBack = `'${args[0]} days'`;
     const queryResult = await pool.query(
       "SELECT name, signuplist, date_of_war FROM warsignup WHERE date_of_war > CURRENT_DATE - $1::interval ORDER BY date_of_war ASC",
       [numberOfDaysBack]
