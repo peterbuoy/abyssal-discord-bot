@@ -112,13 +112,19 @@ const createWarSignUpCollector = async (
         // this query only successfuly updates if the id is not already a top-level key in the jsonb file, the ? operator
         console.log("update query lol");
         const updateQuery = await pool.query(
-          `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true AND signuplist ? $2 = false RETURNING signuplist`,
+          `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true AND signuplist ? $2 = false RETURNING signuplist->$2`,
           values
         );
         console.log(updateQuery.rows[0]);
         if (updateQuery.rowCount === 1) {
-          attendanceChannel.send(
+          await attendanceChannel.send(
             `✅ ${userMention(user.id)} has signed up for war`
+          );
+        } else {
+          await attendanceChannel.send(
+            `${userMention(config.id_peterbuoy)} ${userMention(
+              user.id
+            )} tried to sign up for war but they have not been added into the database.`
           );
         }
       } catch (error) {
