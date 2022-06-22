@@ -110,16 +110,25 @@ const createWarSignUpCollector = async (
           user.id,
         ];
         // this query only successfuly updates if the id is not already a top-level key in the jsonb file, the ? operator
-        console.log("update query lol");
         const updateQuery = await pool.query(
           `UPDATE warsignup SET signuplist = signuplist || $1::jsonb WHERE is_active = true AND signuplist ? $2 = false RETURNING signuplist->$2`,
           values
         );
-        console.log(updateQuery.rows[0]);
+        console.log(
+          updateQuery.rows[0],
+          "is the row count for update query that adds AB members to signuplist"
+        );
         if (updateQuery.rowCount === 1) {
           await attendanceChannel.send(
             `✅ ${userMention(user.id)} has signed up for war`
           );
+        } else if (updateQuery.rows[0] === undefined) {
+          await attendanceChannel.send(
+            `❔ ${userMention(
+              user.id
+            )} has signed up for war but is already signed up.`
+          );
+          return;
         } else {
           await attendanceChannel.send(
             `${userMention(config.id_peterbuoy)} ${userMention(
@@ -136,7 +145,6 @@ const createWarSignUpCollector = async (
           "UPDATE warsignup SET signuplist = signuplist - $1 WHERE signuplist ? $1 = true RETURNING signuplist",
           [user.id]
         );
-        console.log(deletedUser.rowCount);
         if (deletedUser.rowCount === 1) {
           attendanceChannel.send(
             `🚫 ${userMention(user.id)} has signed out of war`
