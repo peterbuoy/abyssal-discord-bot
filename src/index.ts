@@ -127,9 +127,10 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
     await addToDumpSheet(oldMember);
     await removeFromSheet(oldMember);
     if (oldMember.roles.cache.has(config.role_ab)) {
-      await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
-        oldMember.id,
-      ]);
+      await pool.query(
+        "UPDATE warsignup SET signuplist = signuplist - $1 WHERE is_active = true",
+        [oldMember.id]
+      );
       setTimeout(setAbyssalMemberCountAsActivity, 3 * 1000, client);
       updateOrCreateWarSignups();
     }
@@ -194,9 +195,10 @@ client.on("guildMemberRemove", async (member) => {
     }`
   );
   if (member.roles.cache.has(config.role_ab)) {
-    await pool.query("UPDATE warsignup SET signuplist = signuplist - $1", [
-      member.id,
-    ]);
+    await pool.query(
+      "UPDATE warsignup SET signuplist = signuplist - $1 WHERE is_active = true",
+      [member.id]
+    );
     updateOrCreateWarSignups();
     setTimeout(setAbyssalMemberCountAsActivity, 3 * 1000, client);
   }
