@@ -142,7 +142,7 @@ const createWarSignUpCollector = async (
     } else if (reaction.emoji.name === "🚫") {
       try {
         const deletedUser = await pool.query(
-          "UPDATE warsignup SET signuplist = signuplist - $1 WHERE signuplist ? $1 = true RETURNING signuplist",
+          "UPDATE warsignup SET signuplist = signuplist - $1 WHERE signuplist ? $1 = true AND is_active = true RETURNING signuplist",
           [user.id]
         );
         if (deletedUser.rowCount === 1) {
