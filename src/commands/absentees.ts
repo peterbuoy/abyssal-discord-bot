@@ -2,8 +2,7 @@ import { pool } from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config";
 import { userMention } from "@discordjs/builders";
-import { Collection, Guild, GuildMember } from "discord.js";
-import { send } from "process";
+import { Collection, GuildMember } from "discord.js";
 
 export default {
   name: "absentees",
