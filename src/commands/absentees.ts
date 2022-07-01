@@ -2,7 +2,8 @@ import { pool } from "../db/index";
 import { ICommand } from "wokcommands";
 import config from "../config";
 import { userMention } from "@discordjs/builders";
-import { Collection, GuildMember } from "discord.js";
+import { Collection, Guild, GuildMember } from "discord.js";
+import { send } from "process";
 
 export default {
   name: "absentees",
@@ -27,18 +28,29 @@ export default {
       return;
     }
     const members = client.guilds.cache.get(config.id_guild)?.members.cache;
-    const abyssalMembers = members!.filter((member) =>
+    if (members === undefined) {
+      channel.send(
+        "No members found in this Discord server. Unable to execute command."
+      );
+      return;
+    }
+    const abyssalMembers = members.filter((member) =>
       member.roles.cache.has(config.role_ab)
     );
     const fillerGuildMember = abyssalMembers.first();
+    if (fillerGuildMember === undefined) {
+      channel.send(
+        "There are currently no Abyssal members. Unable to execute command."
+      );
+      return;
+    }
+
     const numberOfDaysBack = `'${args[0]} days'`;
     const queryResult = await pool.query(
       "SELECT name, signuplist, date_of_war FROM warsignup WHERE date_of_war > CURRENT_DATE - $1::interval ORDER BY date_of_war ASC",
       [numberOfDaysBack]
     );
     const rows = queryResult.rows;
-
-    // edit the code below lol
 
     // <Discord userID, GuildMember>
     const attendance = new Collection<string, GuildMember>();
@@ -51,7 +63,7 @@ export default {
           continue;
         }
         if (!attendance.has(key)) {
-          attendance.set(key, fillerGuildMember!);
+          attendance.set(key, fillerGuildMember);
         }
       }
     });
