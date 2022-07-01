@@ -1,4 +1,4 @@
-import { CommandErrors, ICommand } from "wokcommands";
+import { ICommand } from "wokcommands";
 import { getSheetByTitle } from "../utils/getSheetByTitle";
 import config from "../config";
 import { userMention } from "@discordjs/builders";
