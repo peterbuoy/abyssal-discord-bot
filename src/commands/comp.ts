@@ -25,6 +25,10 @@ export default {
     const rows = allRows?.filter(
       (row) => row["Gear Score"] !== "" && row["Gear Score"] !== undefined
     );
+    if (rows === undefined) {
+      channel.send("Unable to find any members in spreadsheet.");
+      return;
+    }
     const classMap: Collection<string, number> = new Collection();
     let minGS = Number.POSITIVE_INFINITY;
     let maxGS = Number.NEGATIVE_INFINITY;
@@ -45,7 +49,7 @@ export default {
     });
     classMap.sort().reverse();
     console.log(classMap);
-    avgGS = Math.round(sumGS / rows!.length);
+    avgGS = Math.round(sumGS / rows.length);
     let msg = "**Abyssal Member Composition and Stats**\n";
     classMap.forEach((value, key) => {
       msg += `${value}: ${key}\n`;
