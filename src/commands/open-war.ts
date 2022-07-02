@@ -47,7 +47,7 @@ export default {
     const values = [warName, warDate, true];
     pool
       .query(text, values)
-      .then((res) => {
+      .then(() => {
         message.reply(
           `You have opened up a war:\nName: ${warName}\nDate: ${warDate}`
         );
@@ -65,11 +65,13 @@ export default {
       config.chan_node_war_signup
     ) as TextChannel;
     // This fetches UP to x amount of messages and deletes them via bulk delete discord api call
-    await nodeWarSignupChan.bulkDelete(15);
-    // const messages = await nodeWarSignupChan.messages.fetch({ limit: 10 });
-    // messages.forEach(
-    //   async (message) => await nodeWarSignupChan.messages.delete(message.id)
-    // );
+    try {
+      await nodeWarSignupChan.bulkDelete(15);
+    } catch (error) {
+      console.log(error);
+      const messages = await nodeWarSignupChan.messages.fetch({ limit: 15 });
+      messages.forEach(async (message) => await message.delete());
+    }
 
     const exampleEmbed = new MessageEmbed()
       .setColor("#0099ff")
