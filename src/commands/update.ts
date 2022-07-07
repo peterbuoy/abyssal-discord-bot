@@ -25,6 +25,7 @@ export default {
   syntax: "update Character NoHands Class Warrior level 63 300/300/300",
   callback: async ({ member, message, args, channel }) => {
     // Only allow usage in #gear-update and by az/ab members
+    channel.sendTyping();
     if (
       channel.id !== config.chan_gear_update ||
       !member.roles.cache.hasAny(config.role_ab, config.role_az)
@@ -33,6 +34,13 @@ export default {
         `Only Abyssal and Azurlane members can use this in ${channelMention(
           config.chan_gear_update
         )}.`
+      );
+      return;
+    }
+
+    if (args.length === 0) {
+      await channel.send(
+        "You must provide arguments to use this command.\n e.g. Character Gaisgeil Class Ninja level 66 300/300/300"
       );
       return;
     }
