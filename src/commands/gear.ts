@@ -8,15 +8,16 @@ export default {
   name: "gear",
   category: "Gear",
   description:
-    "Lists all gear of guild members based on arguments: *ab* or *az*",
+    "Lists all gear of guild members based on arguments: *ab* or *az* in descending order by gear score. You can specify other sort orders by providing a second argument, **ap**, *aap**, or **dp**.",
   slash: false,
   testOnly: false,
   minArgs: 1,
-  maxArgs: 1,
+  maxArgs: 2,
   cooldown: "10s",
   expectedArgs: "<guild>",
-  syntax: "gear <guild>",
+  syntax: "gear <guild> <sort_arg>",
   callback: async ({ message, args, member, channel }) => {
+    await channel.sendTyping();
     // Channel and guild member check
     if (
       message.channelId !== config.chan_gear_update ||
@@ -43,7 +44,18 @@ export default {
     const sheet = await getSheetByTitle(sheetTitle);
     let rows = await sheet?.getRows();
     rows = rows?.filter((row) => row["Discord UserID"] !== "");
-    rows?.sort((rowA, rowB) => rowB["Gear Score"] - rowA["Gear Score"]);
+    args[1] = args[1].toLowerCase();
+    if (args[1] === "ap") {
+      rows?.sort((rowA, rowB) => rowB["AP"] - rowA["AP"]);
+    } else if (args[1] === "aap") {
+      rows?.sort((rowA, rowB) => rowB["Awaken AP"] - rowA["Awaken AP"]);
+    } else if (args[1] === "dp") {
+      rows?.sort((rowA, rowB) => rowB["DP"] - rowA["DP"]);
+    } else if (args[1] === "gs") {
+      rows?.sort((rowA, rowB) => rowB["Gear Score"] - rowA["Gear Score"]);
+    } else {
+      rows?.sort((rowA, rowB) => rowB["Gear Score"] - rowA["Gear Score"]);
+    }
 
     // Consider making constants for the padding since they're repeated in member rows
     const familyName = "Family Name".padEnd(17, " ");
