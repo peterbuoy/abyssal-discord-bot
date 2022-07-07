@@ -11,6 +11,7 @@ export default {
   testOnly: false,
   cooldown: "30s",
   callback: async ({ member, channel, args, message }) => {
+    channel.sendTyping();
     // only allow cmd to be used by ab az guild memebers in contact an officer chan
     if (
       !member.roles.cache.hasAny(config.role_ab, config.role_az) ||

@@ -19,6 +19,7 @@ export default {
   maxArgs: 0,
   syntax: "war-stats",
   callback: async ({ member, channel, client }) => {
+    channel.sendTyping();
     if (
       channel.id !== config.chan_war_bot_spam ||
       !member.roles.cache.hasAny(config.role_admin || config.role_war_staff)

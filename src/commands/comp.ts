@@ -13,6 +13,7 @@ export default {
   minArgs: 0,
   maxArgs: 0,
   callback: async ({ message, channel }) => {
+    channel.sendTyping();
     if (channel.id != config.chan_gear_update) {
       message.reply(`You can only use this in <#${config.chan_gear_update}> `);
       return;

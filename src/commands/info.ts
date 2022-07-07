@@ -17,6 +17,7 @@ export default {
   syntax: "info [mention]",
   callback: async ({ message, member, channel }) => {
     // Channel and guild member check
+    channel.sendTyping();
     if (
       channel.id !== config.chan_gear_update ||
       !member.roles.cache.hasAny(config.role_az, config.role_ab)

@@ -10,7 +10,8 @@ export default {
   slash: false,
   testOnly: false,
 
-  callback: async ({ message }) => {
+  callback: async ({ message, channel }) => {
+    channel.sendTyping();
     try {
       const doc = new GoogleSpreadsheet(config.asksaki_sheet_id);
       if (
