@@ -8,14 +8,14 @@ export default {
   name: "gear",
   category: "Gear",
   description:
-    "Lists all gear of guild members based on arguments: *ab* or *az* in descending order by gear score. You can specify other sort orders by providing a second argument, **ap**, *aap**, or **dp**.",
+    "Lists all gear of guild members based on arguments: *ab* or *az* in descending order by gear score.\n You can specify other sort orders by providing a second argument: **ap**, **aap**, or **dp**.",
   slash: false,
   testOnly: false,
   minArgs: 1,
   maxArgs: 2,
   cooldown: "10s",
-  expectedArgs: "<guild>",
-  syntax: "gear <guild> <sort_arg>",
+  expectedArgs: "<guild> [sort_argument]",
+  syntax: "gear <guild> [sort_argument]",
   callback: async ({ message, args, member, channel }) => {
     await channel.sendTyping();
     // Channel and guild member check
