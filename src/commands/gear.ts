@@ -44,17 +44,19 @@ export default {
     const sheet = await getSheetByTitle(sheetTitle);
     let rows = await sheet?.getRows();
     rows = rows?.filter((row) => row["Discord UserID"] !== "");
-    args[1] = args[1].toLowerCase();
-    if (args[1] === "ap") {
-      rows?.sort((rowA, rowB) => rowB["AP"] - rowA["AP"]);
-    } else if (args[1] === "aap") {
-      rows?.sort((rowA, rowB) => rowB["Awaken AP"] - rowA["Awaken AP"]);
-    } else if (args[1] === "dp") {
-      rows?.sort((rowA, rowB) => rowB["DP"] - rowA["DP"]);
-    } else if (args[1] === "gs") {
-      rows?.sort((rowA, rowB) => rowB["Gear Score"] - rowA["Gear Score"]);
-    } else {
-      rows?.sort((rowA, rowB) => rowB["Gear Score"] - rowA["Gear Score"]);
+    if (args[1] !== undefined) {
+      args[1] = args[1].toLowerCase();
+      if (args[1] === "ap") {
+        rows?.sort((rowA, rowB) => rowB["AP"] - rowA["AP"]);
+      } else if (args[1] === "aap") {
+        rows?.sort((rowA, rowB) => rowB["Awaken AP"] - rowA["Awaken AP"]);
+      } else if (args[1] === "dp") {
+        rows?.sort((rowA, rowB) => rowB["DP"] - rowA["DP"]);
+      } else if (args[1] === "gs") {
+        rows?.sort((rowA, rowB) => rowB["Gear Score"] - rowA["Gear Score"]);
+      } else {
+        rows?.sort((rowA, rowB) => rowB["Gear Score"] - rowA["Gear Score"]);
+      }
     }
 
     // Consider making constants for the padding since they're repeated in member rows
