@@ -21,10 +21,16 @@ export default {
     // Channel and guild member check
     if (
       message.channelId !== config.chan_gear_update ||
-      !member.roles.cache.hasAny(config.role_az, config.role_ab)
+      !member.roles.cache.hasAny(
+        config.role_az,
+        config.role_ab,
+        config.role_admin
+      )
     ) {
       message.reply(
-        `You can only use this in ${channelMention(config.chan_gear_update)}`
+        `Only Abyssal and Azurlane members can only use this in ${channelMention(
+          config.chan_gear_update
+        )}`
       );
       return;
     }
