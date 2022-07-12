@@ -1,4 +1,4 @@
-import { channelMention, roleMention } from "@discordjs/builders";
+import { channelMention, roleMention, userMention } from "@discordjs/builders";
 import { ButtonInteraction, MessageActionRow } from "discord.js";
 import { ICommand } from "wokcommands";
 import {
@@ -86,7 +86,9 @@ Then try again in 60 seconds.`);
             member?.roles.add(config.role_ab_pending);
             reply.delete();
             channel.send({
-              content: `You have been tagged as a pending **<Abyssal>** member! A member of ${roleMention(
+              content: `${userMention(
+                i.user.id
+              )} has been tagged as a pending **<Abyssal>** member.\nA member of ${roleMention(
                 config.role_war_staff
               )} will get to you shortly to verify your gear and administer a PvP test.`,
             });
@@ -106,7 +108,9 @@ Then try again in 60 seconds.`);
               member?.roles.add(config.role_az_pending);
               reply.delete();
               channel.send({
-                content: `Congratulations on completing the application process! You have been tagged as a pending **<AzurLane>** member! The <@&${
+                content: `${userMention(
+                  i.user.id
+                )} has been tagged as a pending **<AzurLane>** member. The <@&${
                   config.role_gm_az
                 }> or ${roleMention(
                   config.role_az_officer
@@ -114,8 +118,7 @@ Then try again in 60 seconds.`);
                   config.role_gm_az
                 )} or ${roleMention(
                   config.role_az_officer
-                )} in a few hours to see if they are around!
-              **Please note that your pending tag will be automatically removed in 72 hours. You will have to reapply if you do not get invited within that time**`,
+                )} in a few hours to see if they are around!\n**Please note that your pending tag will be automatically removed in 72 hours. You will have to reapply if you do not get invited within that time**`,
               });
               await pool.query(
                 "INSERT INTO pending_az(discord_user_id) VALUES ($1) ON CONFLICT (discord_user_id) DO UPDATE SET conferment_timestamp = current_timestamp",
