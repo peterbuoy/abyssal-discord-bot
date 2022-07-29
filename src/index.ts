@@ -127,19 +127,11 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
     await addToDumpSheet(oldMember);
     await removeFromSheet(oldMember);
     if (oldMember.roles.cache.has(config.role_ab)) {
-      staffBotNotifChannel.send(
-        `${userMention(
-          config.id_peterbuoy
-        )} a prior Abyssal member, ${userMention(
-          oldMember.id
-        )} has had their role removed. Check if the war signup list is ok.`
-      );
-      await pool.query(
-        "UPDATE warsignup SET signuplist = signuplist - $1 WHERE is_active = true",
-        [oldMember.id]
-      );
+      // await pool.query(
+      //   "UPDATE warsignup SET signuplist = signuplist - $1 WHERE is_active = true",
+      //   [oldMember.id]
+      // );
       setTimeout(setAbyssalMemberCountAsActivity, 3 * 1000, client);
-      updateOrCreateWarSignups();
     }
   }
 
