@@ -11,7 +11,7 @@ const sendWelcomeMessage = async (
     userMention(newMember.id) +
       "Welcome to the guild! You should be able to see all the members-only restricted Channels.\n" +
       "------------------------------------------\n" +
-      "Make sure you navigate to <#637521198875672587> and register your gear and levels immediately. Please register only your combat main that you will be using for node wars. Failure to do so in a timely manner may result in expulsion.\n\n" +
+      "Please join the Cotton/ZZZ Discord at https://discord.com/invite/cottonzzz and request roles there, after which you can update your gear in #gear and sign up for wars in #nodewars.\n\n" +
       "AzurLane members are exempt from this requirement, but are still welcome to update their gear via <#637521198875672587> to track progress and receive advice.\n" +
       "------------------------------------------\n" +
       "All of our <#412900828328886273> and <#415340796561195008> are available for you to use. A quick peek over in <#711175769077841990> won't hurt either. If you have any questions, please ask in <#688929102572421351>! We are more than happy to assist you! \n" +
