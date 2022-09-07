@@ -16,12 +16,9 @@ export default {
   expectedArgs: "[mention]",
   syntax: "info [mention]",
   callback: async ({ message, member, channel }) => {
-    // Channel and guild member check
+    // Channel check
     channel.sendTyping();
-    if (
-      channel.id !== config.chan_gear_update ||
-      !member.roles.cache.hasAny(config.role_az, config.role_ab)
-    ) {
+    if (channel.id !== config.chan_gear_update) {
       message.reply(
         `You can only use this in ${channelMention(config.chan_gear_update)}`
       );
@@ -40,6 +37,12 @@ export default {
         ? "<Abyssal>"
         : "<Azurlane>";
     } else {
+      if (!member.roles.cache.hasAny(config.role_ab, config.role_az)) {
+        message.reply(
+          "Non-guild members must call %info with a user mention. e.g. `%info @guysgale`"
+        );
+        return;
+      }
       sheetTitle = member.roles.cache.has(config.role_ab)
         ? config.ab_sheet_title
         : config.az_sheet_title;

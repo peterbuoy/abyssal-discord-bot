@@ -16,19 +16,12 @@ export default {
   cooldown: "10s",
   expectedArgs: "<guild> [sort_argument]",
   syntax: "gear <guild> [sort_argument]",
-  callback: async ({ message, args, member, channel }) => {
+  callback: async ({ message, args, channel }) => {
     await channel.sendTyping();
-    // Channel and guild member check
-    if (
-      message.channelId !== config.chan_gear_update ||
-      !member.roles.cache.hasAny(
-        config.role_az,
-        config.role_ab,
-        config.role_admin
-      )
-    ) {
+    // Channel check
+    if (message.channelId !== config.chan_gear_update) {
       message.reply(
-        `Only Abyssal and Azurlane members can only use this in ${channelMention(
+        `This command can only be used in ${channelMention(
           config.chan_gear_update
         )}`
       );
