@@ -1,5 +1,5 @@
 import { Client, DiscordAPIError, Intents, TextChannel } from "discord.js";
-import { userMention } from "@discordjs/builders";
+import { roleMention, userMention } from "@discordjs/builders";
 
 import path from "path";
 import WOKCommands from "wokcommands";
@@ -147,7 +147,7 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
     )
   ) {
     const includeAZGMMention = newMember.roles.cache.has(config.role_az)
-      ? userMention(config.role_gm_az)
+      ? roleMention(config.role_gm_az)
       : "";
     staffBotNotifChannel.send(
       `${includeAZGMMention}
@@ -168,7 +168,11 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
       config.role_ab_pending
     )
   ) {
+    const includeAZGMMention = newMember.roles.cache.has(config.role_az)
+      ? roleMention(config.role_gm_az)
+      : "";
     staffBotNotifChannel.send(`
+    ${includeAZGMMention}
       ☑️ Valid Name Change
       User Profile: ${userMention(userID)}
       Old Nickname: ${oldMember.nickname}
@@ -191,7 +195,7 @@ client.on("guildMemberRemove", async (member) => {
   ) as TextChannel;
   const familyName = utils.parseFamilyName(member.displayName);
   const includeAZGMMention = member.roles.cache.has(config.role_az)
-    ? userMention(config.role_gm_az)
+    ? roleMention(config.role_gm_az)
     : "";
   await staffBotNotifChannel.send(
     `${includeAZGMMention}
