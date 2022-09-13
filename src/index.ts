@@ -146,8 +146,12 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
       config.role_ab_pending
     )
   ) {
+    const includeAZGMMention = newMember.roles.cache.has(config.role_az)
+      ? userMention(config.role_gm_az)
+      : "";
     staffBotNotifChannel.send(
-      `⚠️ Invalid Name Change
+      `${includeAZGMMention}
+        ⚠️ Invalid Name Change
         User Profile: ${userMention(userID)}
         Old Nickname: ${oldMember.nickname}
         New Nickname: ${newMember.nickname}\n`
@@ -186,10 +190,14 @@ client.on("guildMemberRemove", async (member) => {
     config.chan_staff_bot_notif
   ) as TextChannel;
   const familyName = utils.parseFamilyName(member.displayName);
+  const includeAZGMMention = member.roles.cache.has(config.role_az)
+    ? userMention(config.role_gm_az)
+    : "";
   await staffBotNotifChannel.send(
-    `${userMention(
-      member.id
-    )}, family name \`${familyName}\` has left the server. Please kick from ${
+    `${includeAZGMMention}
+      ${userMention(
+        member.id
+      )}, family name \`${familyName}\` has left the server. Please kick from ${
       member.roles.cache.has(config.role_az) ? "Azurlane" : "Abyssal"
     }`
   );
