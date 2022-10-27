@@ -24,7 +24,7 @@ export default {
   maxArgs: 0,
   cooldown: "60s",
 
-  callback: async ({ message, channel, member }) => {
+  callback: async ({ message, channel, member, cancelCoolDown }) => {
     if (
       member.roles.cache.hasAny(
         config.role_ab,
@@ -42,11 +42,10 @@ export default {
       return;
     }
     if (!utils.isNameValid(member.nickname as string)) {
-      //
-      message.reply(`Please confirm that your name is formatted correctly:
-      Nickname <YourFamilyNameHere> (whatever here)
-      *Example:* Gais <Gaisgeil> 0/10 pen debo
-Then try again in 60 seconds.`);
+      message.reply(`Please confirm that your family name is formatted correctly: 
+      Nickname <YourFamilyNameHere>
+      *Example:* Gais <Gaisgeil> I love bdo`);
+      cancelCoolDown();
       return;
     }
 
