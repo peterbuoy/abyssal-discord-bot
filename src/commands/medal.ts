@@ -1,5 +1,6 @@
 import { ICommand } from "wokcommands";
 import * as cheerio from "cheerio";
+import fetch from "node-fetch";
 
 export default {
   name: "medal",
@@ -14,12 +15,14 @@ export default {
   syntax:
     "medal <https://medal.tv/games/black-desert/clips/H2GC0kmyMJt0a/ZJoPPMFO5SH4?theater=true>",
   cooldown: "2s",
-  callback: async ({ channel, args }) => {
+  callback: async ({ channel, message, args }) => {
+    message.suppressEmbeds(true);
+
     let link = args[0];
     // Validate hostname
     const linkHostName = new URL(link).hostname;
     if (linkHostName !== "medal.tv") {
-      console.log("Sorry, that's not a valid medal.tv link");
+      message.reply("Sorry, that's not a valid medal.tv link");
       return;
     }
     // Sometimes sharing links use the clips route which has different html structure from clip route
@@ -32,12 +35,12 @@ export default {
         "content"
       );
       if (directLink == undefined) {
-        console.error("Unable to obtain direct link to video using cheerio.");
+        message.reply("Unable to obtain direct link to video using cheerio.");
         return;
       }
       channel.send(directLink);
     } catch (error) {
-      console.log(
+      message.reply(
         "Unexpected error while obtaining video from given medal link."
       );
       console.error(error);

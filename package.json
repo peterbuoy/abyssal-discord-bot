@@ -29,6 +29,7 @@
     "dotenv": "^14.2.0",
     "google-spreadsheet": "^3.2.0",
     "got": "11.8.3",
+    "node-fetch": "^3.2.10",
     "pg": "^8.7.3",
     "wokcommands": "^1.5.3"
   },
