@@ -26,11 +26,11 @@ export default {
     }
     // Sometimes sharing links use the clips route which has different html structure from clip route
     link = link.replace("clips", "clip");
+    const path = url.pathname;
+    const pathTokens = path.split("/");
+    const clipTokenIndex = pathTokens.indexOf("clip");
+    const clipID = pathTokens[clipTokenIndex + 1];
     try {
-      const path = url.pathname;
-      const pathTokens = path.split("/");
-      const clipTokenIndex = pathTokens.indexOf("clip");
-      const clipID = pathTokens[clipTokenIndex + 1];
       const res = await fetch(link);
       const html = await res.text();
       const $ = cheerio.load(html);
@@ -38,6 +38,7 @@ export default {
       const targetNode: any = $("body script").get()[0].firstChild;
       // Remove var hydrationData= from the target script innerHTML
       const hydrationData = JSON.parse(targetNode.data.substring(18));
+      console.log(hydrationData);
       const directLink = hydrationData.clips[clipID].contentUrl;
       channel.send(`${userMention(user.id)} ${directLink}`);
     } catch (error) {
