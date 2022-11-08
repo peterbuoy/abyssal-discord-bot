@@ -1,6 +1,7 @@
 import { ICommand } from "wokcommands";
 import * as cheerio from "cheerio";
 import fetch from "node-fetch";
+import { userMention } from "@discordjs/builders";
 
 export default {
   name: "medal",
@@ -15,30 +16,30 @@ export default {
   syntax:
     "medal <https://medal.tv/games/black-desert/clips/H2GC0kmyMJt0a/ZJoPPMFO5SH4?theater=true>",
   cooldown: "2s",
-  callback: async ({ channel, message, args }) => {
-    message.suppressEmbeds(true);
-
+  callback: async ({ channel, message, args, user }) => {
     let link = args[0];
     // Validate hostname
-    const linkHostName = new URL(link).hostname;
-    if (linkHostName !== "medal.tv") {
+    const url = new URL(link);
+    if (url.hostname !== "medal.tv") {
       message.reply("Sorry, that's not a valid medal.tv link");
       return;
     }
     // Sometimes sharing links use the clips route which has different html structure from clip route
     link = link.replace("clips", "clip");
     try {
+      const path = url.pathname;
+      const pathTokens = path.split("/");
+      const clipTokenIndex = pathTokens.indexOf("clip");
+      const clipID = pathTokens[clipTokenIndex + 1];
       const res = await fetch(link);
       const html = await res.text();
       const $ = cheerio.load(html);
-      const directLink: string | undefined = $('[property="og:video"]').attr(
-        "content"
-      );
-      if (directLink == undefined) {
-        message.reply("Unable to obtain direct link to video using cheerio.");
-        return;
-      }
-      channel.send(directLink);
+      // The first script in the body tag is the script with the url
+      const targetNode: any = $("body script").get()[0].firstChild;
+      // Remove var hydrationData= from the target script innerHTML
+      const hydrationData = JSON.parse(targetNode.data.substring(18));
+      const directLink = hydrationData.clips[clipID].contentUrl;
+      channel.send(`${userMention(user.id)} ${directLink}`);
     } catch (error) {
       message.reply(
         "Unexpected error while obtaining video from given medal link."
