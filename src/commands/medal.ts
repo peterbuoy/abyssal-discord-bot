@@ -40,9 +40,9 @@ export default {
       const hydrationData = JSON.parse(targetNode.data.substring(18));
       console.log(hydrationData);
       const directLink = hydrationData.clips[clipID].contentUrl;
-      channel.send(`${userMention(user.id)} ${directLink}`);
+      await channel.send(`${userMention(user.id)} ${directLink}`);
     } catch (error) {
-      message.reply(
+      await message.reply(
         "Unexpected error while obtaining video from given medal link."
       );
       console.error(error);
