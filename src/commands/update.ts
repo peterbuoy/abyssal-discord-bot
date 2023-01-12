@@ -280,7 +280,8 @@ export default {
 } as ICommand;
 
 function parseClassName(className: string) {
-  // Archer, Berserker, Dark Knight, Kunoichi, Lahn, Maehwa, Musa, Mystic, Ninja, Ranger, Shai, Sorceress, Striker, Tamer, Valkyrie, Warrior, Witch, Wizard
+  // Archer, Berserker, Dark Knight, Kunoichi, Lahn, Maegu, Maehwa, Musa, Mystic, Ninja, Ranger, Shai, Sorceress, Striker, Tamer, Valkyrie, Warrior, Witch, Wizard
+  className = className.toLocaleLowerCase();
   if (className == "archer") className = "Archer";
   else if (
     className == "berserker" ||
@@ -322,6 +323,12 @@ function parseClassName(className: string) {
     className = "Lahn";
   else if (className == "maehwa" || className == "maewha" || className == "mae")
     className = "Maehwa";
+  else if (
+    className == "maegu" ||
+    className == "maegoo" ||
+    className == "maegyu"
+  )
+    className = "Maegu";
   else if (className == "musa") className = "Musa";
   else if (className == "mystic") className = "Mystic";
   else if (className == "ninja" || className == "nin") className = "Ninja";
