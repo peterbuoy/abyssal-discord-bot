@@ -31,7 +31,9 @@ Secrets and tokens will be stored in the `.env` file, which needs to be manually
 # Starting the Bots
 ## Live Development: `npm run dev`
 
-This uses ts-node-dev to start the bot up for development and sets process.env.NODE_ENV to dev. This is memory intensive so *do not* do this on the production server.
+This uses ts-node-dev to start the test bot up for development and sets process.env.NODE_ENV to dev. This is memory intensive so *do not* do this on the production server.
+
+*Note: only one instance of the test bot should be active since it should use a real bot token (test bot). Also, you need to populate your `.env` file locally."*
 
 ## Deploy Development: `npm deploy:dev`
 This creates a `dist` directory containing the compiled js files. Then it runs the `index.js` file using the **development** (testing) configuration file.
