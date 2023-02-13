@@ -9,7 +9,7 @@ const sendWelcomeMessage = async (
   const channel = newMember.guild.channels.cache.get(channelID) as TextChannel;
   const isAbyssal: boolean = newMember.roles.cache.has(config.role_ab);
   const abyssalMessage =
-    "Please join the Equilibrium alliance Discord at https://www.discord.gg/Equilibrium, after which you can update your gear and sign up for war in the respective channels.";
+    "Please join the Equilibrium alliance Discord using the link below, after which you can update your gear and sign up for war in the respective channels.\nhttps://www.discord.gg/Equilibrium";
   const azurlaneMessage = `AzurLane members can optionally update their gear in ${channelMention(
     config.chan_gear_update
   )} to track progress and receive advice. Type in \`%help\` in ${channelMention(
