@@ -46,7 +46,7 @@ client.on("ready", async (client) => {
   setAbyssalMemberCountAsActivity(client);
   purgeAzPending(client);
 
-  updateOrCreateWarSignups();
+  // updateOrCreateWarSignups();
   new WOKCommands(client, {
     commandDir: path.join(__dirname, "commands"),
     // this setting is exclusive or
@@ -94,7 +94,7 @@ client.on("ready", async (client) => {
     console.error(error);
   }
   console.log(`${client.user.username} is ready!`);
-  createWarSignUpCollector(client);
+  // createWarSignUpCollector(client);
 });
 
 // Event listener for role tagging and name enforcement of ABAZ members
@@ -210,7 +210,7 @@ client.on("guildMemberRemove", async (member) => {
       "UPDATE warsignup SET signuplist = signuplist - $1 WHERE is_active = true",
       [member.id]
     );
-    updateOrCreateWarSignups();
+    // updateOrCreateWarSignups();
     setTimeout(setAbyssalMemberCountAsActivity, 3 * 1000, client);
   }
 });
